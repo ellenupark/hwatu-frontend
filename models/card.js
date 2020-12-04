@@ -10,17 +10,23 @@ class Card {
     };
 
 
-    renderCard(){
+    renderCard() {
         const cardContainer = document.getElementById(`player-${this.playerId}`);
-
         const cardImg = document.createElement('img')
 
-        cardImg.classList.add(this.month)
-        cardImg.classList.add(this.category)
-        cardImg.id = this.id
-        cardImg.setAttribute('src', this.image)
+        if (this.playerId == deck.id) {
+            if (cardContainer.childElementCount === 0) {
+                cardImg.setAttribute('src', "https://i.ibb.co/QJ2J9d2/cardback.png");
+                cardContainer.appendChild(cardImg)
+            }
+        } else {
+            cardImg.classList.add(this.month)
+            cardImg.classList.add(this.category)
+            cardImg.id = this.id
+            cardImg.setAttribute('src', this.image)
 
-        cardContainer.appendChild(cardImg)
+            cardContainer.appendChild(cardImg)
+        }
     }
 };
 

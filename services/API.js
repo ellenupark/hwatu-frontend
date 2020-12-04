@@ -3,18 +3,16 @@ class API {
 
     static addPlayersAndCards(){
         fetch("http://localhost:3000/players")
-          .then(resp => resp.json())
-          .then(players => {
-              players.data.forEach(player => {
-                  if (player.attributes.username === "") {
-                      new Player(player.id, player.attributes.role, player.attributes.username)
-                      player.attributes.cards.forEach(card => {
-                          // const {id, category, image, matched, playerId, month} = card
-                          new Card(card.id, card.category, card.image, card.matched, card.player_id, card.month)
-                      })
-                  }
-              })
-          }) 
+            .then(resp => resp.json())
+            .then(players => {
+                players.data.forEach(player => {
+                    new Player(player.id, player.attributes.role, player.attributes.username)
+                })
+                players.data.forEach(player => {
+                    player.attributes.cards.forEach(card => {
+                        new Card(card.id, card.category, card.image, card.matched, card.player_id, card.month)
+                    })
+                })
+            }) 
     }
-
 }

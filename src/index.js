@@ -48,7 +48,6 @@ function loadFormlistener(){
         .then(data => {
           if (!data.errors){
             API.addPlayersAndCards()
-
           } else {
             throw new Error( `${data.errors}`)
           }

@@ -1,4 +1,5 @@
 
+
 .hidden {
     display: none;
 }
@@ -28,57 +29,57 @@ form {
 }
 
 #main-game {
-    background-color: lightblue;
     height: 50%;
-    border: 1px solid green;
+    /* border: 1px solid green; */
 }
 
 .row {
     text-align: center;
+    padding: 3px;
 }
 
 .col-1 {
-    border: 1px solid black;
+    /* border: 1px solid black; */
 }
 
 .col-2 {
-    border: 1px solid black;
+    /* border: 1px solid black; */
 }
 
 .col-3 {
-    border: 1px solid black;
+    /* border: 1px solid black; */
 }
 
 .col-4 {
-    border: 1px solid red;
+    /* border: 1px solid red; */
 }
 
 .col-5 {
-    border: 1px solid black;
+    /* border: 1px solid black; */
 }
 
 .col-6 {
-    border: 1px solid black;
+    /* border: 1px solid black; */
 }
 
 .col-7 {
-    border: 1px solid black;
+    /* border: 1px solid black; */
 }
 
 .col-8 {
-    border: 1px solid black;
+    /* border: 1px solid black; */
 }
 
 .col-9 {
-    border: 1px solid black;
+    /* border: 1px solid black; */
 }
 
 .col-10 {
-    border: 1px solid black;
+    /* border: 1px solid black; */
 }
 
 .col {
-    border: 1px solid black;
+    /* border: 1px solid black; */
 }
 
 
@@ -98,4 +99,9 @@ img {
 
 .pairs {
     background-color: grey;
+}
+
+.test {
+    height: 100vh;
+    background-color: lightblue;
 }
