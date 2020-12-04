@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function(){
     // loadPosts()
     loadFormlistener()
+    createCardList()
     // eventDelegation()
     // buttonEvent()
     // clickEvent()
@@ -15,7 +16,7 @@ const mainGameDiv = document.getElementById('main-game')
 const navBar = document.getElementById('nav-bar')
 
 function loadCards() {
-    
+
 }
 
 function loadFormlistener(){
@@ -52,11 +53,19 @@ function loadFormlistener(){
         })
         .catch(alert)
     })  
-  }
+}
 
 function getInfo(event){
     return {
         role: 'user',
         username: formName.value,
     }
+}
+
+function createCardList() {
+    fetch(`http://localhost:3000/cards`)
+    .then(res => res.json())
+    .then(cards => {
+      createCardList(cards)
+    });
 }
