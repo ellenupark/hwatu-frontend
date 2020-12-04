@@ -1,7 +1,8 @@
 document.addEventListener("DOMContentLoaded", function(){
     // loadPosts()
-    loadFormlistener()
-    createCardList()
+    loadFormlistener();
+    // API.addPlayersAndCards()
+    // createCardList()
     // eventDelegation()
     // buttonEvent()
     // clickEvent()
@@ -14,6 +15,8 @@ const playerURL = "http://localhost:3000/players"
 const welcomeDiv = document.getElementById("welcome")
 const mainGameDiv = document.getElementById('main-game')
 const navBar = document.getElementById('nav-bar')
+const gameURL = "http://localhost:3000/games"
+
 
 function loadCards() {
 
@@ -37,28 +40,27 @@ function loadFormlistener(){
             },
             body: JSON.stringify(formResults)
         }
-        url = playerURL
+        url = gameURL;
 
         // fetch our results to the back end
         fetch(url, options)
         .then(resp => resp.json())
         .then(data => {
           if (!data.errors){
-              welcomeDiv.classList.add("hidden")
-              mainGameDiv.classList.remove('hidden')
-              navBar.classList.remove('hidden')
+            API.addPlayersAndCards()
+
           } else {
             throw new Error( `${data.errors}`)
           }
         })
+        .then(data => revealBoard())
         .catch(alert)
     })  
 }
 
 function getInfo(event){
     return {
-        role: 'user',
-        username: formName.value,
+      username: formName.value,
     }
 }
 
@@ -68,4 +70,10 @@ function createCardList() {
     .then(cards => {
       createCardList(cards)
     });
+}
+
+function revealBoard() {
+  welcomeDiv.classList.add("hidden")
+  mainGameDiv.classList.remove('hidden')
+  navBar.classList.remove('hidden')
 }
