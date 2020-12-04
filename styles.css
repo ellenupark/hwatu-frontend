@@ -1,0 +1,101 @@
+
+.hidden {
+    display: none;
+}
+
+#welcome {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://japandeluxetours.com/uploads/2017/06/20170609135305_593b0ab176b4c.jpg');
+    height: 100vh;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    border: 1px solid green;
+    color: white;
+}
+
+form {
+    display: table;
+    margin: auto;
+}
+
+.paired-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    padding: 20px;
+}
+
+#main-game {
+    background-color: lightblue;
+    height: 50%;
+    border: 1px solid green;
+}
+
+.row {
+    text-align: center;
+}
+
+.col-1 {
+    border: 1px solid black;
+}
+
+.col-2 {
+    border: 1px solid black;
+}
+
+.col-3 {
+    border: 1px solid black;
+}
+
+.col-4 {
+    border: 1px solid red;
+}
+
+.col-5 {
+    border: 1px solid black;
+}
+
+.col-6 {
+    border: 1px solid black;
+}
+
+.col-7 {
+    border: 1px solid black;
+}
+
+.col-8 {
+    border: 1px solid black;
+}
+
+.col-9 {
+    border: 1px solid black;
+}
+
+.col-10 {
+    border: 1px solid black;
+}
+
+.col {
+    border: 1px solid black;
+}
+
+
+img {
+    width: 60px;
+    padding: 2px;
+}
+
+.paired img {
+    width: 33px;
+}
+
+.matched {
+    display: inline-block;
+    border: 1px solid orange;
+}
+
+.pairs {
+    background-color: grey;
+}
