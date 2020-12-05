@@ -7,10 +7,7 @@ class Card {
         this.playerId = playerId;
         this.month = month;
         this.renderCard();
-        this.addToCardSummary()
-        if (this.playerId === user.id) {
-            this.playCardEvent();
-        };
+        // this.addToCardSummary()
     };
 
 
@@ -28,31 +25,66 @@ class Card {
             cardImg.classList.add(this.category)
             cardImg.id = this.id
             cardImg.setAttribute('src', this.image)
+            if (this.playerId == user.id) {
+                cardImg.addEventListener('click', this.playCard)
+            }
 
             cardContainer.appendChild(cardImg)
         }
     }
 
-    addToCardSummary() {
-        const cardMonth = downcaseFirstLetter(this.month);
-        const parentMonthDiv = document.getElementById(cardMonth);
-        parentMonthDiv.appendChild(this.createCardImgHtml())
+    // addToCardSummary() {
+    //     const cardMonth = downcaseFirstLetter(this.month);
+    //     const parentMonthDiv = document.getElementById(cardMonth);
+    //     parentMonthDiv.appendChild(this.createCardImgHtml())
 
-        const cardCategory = this.category;
-        const parentCategoryDiv =  document.getElementsByClassName(cardCategory)[0];
-        parentCategoryDiv.appendChild(this.createCardImgHtml())
-    }
+    //     const cardCategory = this.category;
+    //     const parentCategoryDiv =  document.getElementsByClassName(cardCategory)[0];
+    //     parentCategoryDiv.appendChild(this.createCardImgHtml())
+    // }
 
     createCardImgHtml() {
         let cardImg = document.createElement('img');
         cardImg.setAttribute('src', this.image);
         cardImg.style.maxWidth = "45px";
-
-        if (this.playerId == user.id) {
-            cardImg.addEventListener('click', playCard())
-        }
         return cardImg;
     }
+
+    playCard() {
+        fetch(`http://localhost:3000/cards/${this.id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({
+                player_id: board.id
+            })
+        })
+        .then(function(data) {
+            Card.loadPlayerCards(board)
+            Card.loadPlayerCards(user)
+        })
+    }
+
+    static loadPlayerCards(player) {
+        fetch(`http://localhost:3000/players/${player.id}`)
+            .then(resp => resp.json())
+            .then(function(resp) {
+                Card.loadPlayerCardsHtml(resp)
+            })
+    }
+
+    static loadPlayerCardsHtml(player) {
+        let playerDiv = document.getElementById(`player-${player.data.id}`);
+        playerDiv.innerHTML = "";
+    
+        player.data.attributes.cards.forEach(function(card) {
+            new Card(card.id, card.category, card.image, card.matched, card.player_id, card.month)
+        });
+    }
+
+
 };
 
 
@@ -60,19 +92,22 @@ function downcaseFirstLetter(string) {
     return string.charAt(0).toLowerCase() + string.slice(1);
 }
 
-function playCard() {
-    fetch(`http://localhost:3000/cards/${card.id}`, {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-        },
-        body: JSON.stringify({
-            player_id: board.id
-        })
+function loadPlayerCards(player) {
+    fetch(`http://localhost:3000/players/${player.id}`)
+    .then(resp => resp.json())
+    .then(function(resp) {
+        loadPlayerCardsHtml(resp)
     })
-    .then(function(data) {
-        loadBoard()
-        loadUser()
-    })
+}
+
+function loadPlayerCardsHtml(player) {
+    let playerDiv = document.getElementById(`player-${player.data.id}`);
+    playerDiv.innerHTML = "";
+
+    player.data.attributes.cards.forEach(function(card) {
+        let newImg = document.createElement("img");
+        newImg.setAttribute('src', card.image)
+        newImg.addEventListener('click', playCard());
+        playerDiv.appendChild(newImg)
+    });
 }

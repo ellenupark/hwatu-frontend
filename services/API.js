@@ -11,8 +11,27 @@ class API {
                 players.data.forEach(player => {
                     player.attributes.cards.forEach(card => {
                         new Card(card.id, card.category, card.image, card.matched, card.player_id, card.month)
+                        API.loadCardsToSummary(card);
                     })
                 })
             }) 
+    }
+
+    static loadCardsToSummary(card) {
+        const cardMonth = downcaseFirstLetter(card.month);
+        const parentMonthDiv = document.getElementById(cardMonth);
+
+        let cardMonthImg = document.createElement('img');
+        cardMonthImg.setAttribute('src', card.image);
+        cardMonthImg.style.maxWidth = "45px";
+        parentMonthDiv.appendChild(cardMonthImg)
+    
+        const cardCategory = card.category;
+        const parentCategoryDiv =  document.getElementsByClassName(cardCategory)[0];
+
+        let cardCategoryImg = document.createElement('img');
+        cardCategoryImg.setAttribute('src', card.image);
+        cardCategoryImg.style.maxWidth = "45px";
+        parentCategoryDiv.appendChild(cardCategoryImg)
     }
 }
