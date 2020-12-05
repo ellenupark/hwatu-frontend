@@ -8,6 +8,9 @@ class Card {
         this.month = month;
         this.renderCard();
         this.addToCardSummary()
+        if (this.playerId === user.id) {
+            this.playCardEvent();
+        };
     };
 
 
@@ -44,6 +47,10 @@ class Card {
         let cardImg = document.createElement('img');
         cardImg.setAttribute('src', this.image);
         cardImg.style.maxWidth = "45px";
+
+        if (this.playerId == user.id) {
+            cardImg.addEventListener('click', playCard())
+        }
         return cardImg;
     }
 };
@@ -51,4 +58,21 @@ class Card {
 
 function downcaseFirstLetter(string) {
     return string.charAt(0).toLowerCase() + string.slice(1);
+}
+
+function playCard() {
+    fetch(`http://localhost:3000/cards/${card.id}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        body: JSON.stringify({
+            player_id: board.id
+        })
+    })
+    .then(function(data) {
+        loadBoard()
+        loadUser()
+    })
 }
