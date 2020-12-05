@@ -7,6 +7,7 @@ class Card {
         this.playerId = playerId;
         this.month = month;
         this.renderCard();
+        this.addToCardSummary()
     };
 
 
@@ -28,5 +29,26 @@ class Card {
             cardContainer.appendChild(cardImg)
         }
     }
+
+    addToCardSummary() {
+        const cardMonth = downcaseFirstLetter(this.month);
+        const parentMonthDiv = document.getElementById(cardMonth);
+        parentMonthDiv.appendChild(this.createCardImgHtml())
+
+        const cardCategory = this.category;
+        const parentCategoryDiv =  document.getElementsByClassName(cardCategory)[0];
+        parentCategoryDiv.appendChild(this.createCardImgHtml())
+    }
+
+    createCardImgHtml() {
+        let cardImg = document.createElement('img');
+        cardImg.setAttribute('src', this.image);
+        cardImg.style.maxWidth = "45px";
+        return cardImg;
+    }
 };
 
+
+function downcaseFirstLetter(string) {
+    return string.charAt(0).toLowerCase() + string.slice(1);
+}

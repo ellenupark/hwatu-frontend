@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function(){
     // loadPosts()
+    API.addPlayersAndCards()
     loadFormlistener();
     // API.addPlayersAndCards()
     // createCardList()
@@ -47,12 +48,11 @@ function loadFormlistener(){
         .then(resp => resp.json())
         .then(data => {
           if (!data.errors){
-            API.addPlayersAndCards()
+            revealBoard()
           } else {
             throw new Error( `${data.errors}`)
           }
         })
-        .then(data => revealBoard())
         .catch(alert)
     })  
 }
