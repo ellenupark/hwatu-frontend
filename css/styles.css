@@ -1,3 +1,7 @@
+body {
+    background-color: lightblue;
+}
+
 .hidden {
     display: none;
 }
@@ -8,7 +12,6 @@
     background-size: cover;
     margin: 0;
     padding: 0;
-    border: 1px solid green;
     color: white;
 }
 
@@ -34,6 +37,10 @@ form {
 .row {
     text-align: center;
     padding: 3px;
+}
+
+.instructions .row {
+    text-align: left;
 }
 
 .col-1 {
