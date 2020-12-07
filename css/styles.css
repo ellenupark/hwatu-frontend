@@ -117,3 +117,7 @@ img {
 
     /* border: 1px solid black; */
 }
+
+.highlight {
+    border: 3px solid yellow;
+}

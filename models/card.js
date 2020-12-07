@@ -60,6 +60,7 @@ class Card {
     }
 
     static moveCardToBoard() {
+        game.started = true;
         const cardId = this.id.split('-')[1];
         const boardPlayer = game.players.find(x => x.role === 'board');
         const userPlayer = game.players.find(x => x.role === 'user');
@@ -78,6 +79,7 @@ class Card {
             Card.loadPlayerCards(boardPlayer)
             Card.loadPlayerCards(userPlayer)
         })
+        .then(resp => game.playTurn());
     }
 
     // playCard() {
