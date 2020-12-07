@@ -34,16 +34,6 @@ class Card {
         }
     }
 
-    // addToCardSummary() {
-    //     const cardMonth = downcaseFirstLetter(this.month);
-    //     const parentMonthDiv = document.getElementById(cardMonth);
-    //     parentMonthDiv.appendChild(this.createCardImgHtml())
-
-    //     const cardCategory = this.category;
-    //     const parentCategoryDiv =  document.getElementsByClassName(cardCategory)[0];
-    //     parentCategoryDiv.appendChild(this.createCardImgHtml())
-    // }
-
     createCardImgHtml() {
         let cardImg = document.createElement('img');
         cardImg.setAttribute('src', this.image);
@@ -105,7 +95,6 @@ class Card {
     }
 
     static loadPlayerCardsHtml(player) {
-        debugger
         let playerDiv = document.getElementsByClassName(`player-${player.data.id}`)[0];
         playerDiv.innerHTML = "";
     

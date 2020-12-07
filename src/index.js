@@ -21,7 +21,7 @@ const mainGameDiv = document.getElementById('main-game')
 const navBar = document.getElementById('nav-bar')
 const gameURL = "http://localhost:3000/games"
 
-async function loadGame() {
+function loadGame() {
     // identify the form element
     // add the event listener to the form for the form submit
     gameForm.addEventListener("submit", function(event){
