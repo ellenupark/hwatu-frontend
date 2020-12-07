@@ -20,6 +20,12 @@ class Card {
                 cardImg.setAttribute('src', "https://i.ibb.co/QJ2J9d2/cardback.png");
                 cardContainer.appendChild(cardImg)
             }
+        } else if (this.playerId == computer.id) {
+            cardImg.classList.add(this.month)
+            cardImg.classList.add(this.category)
+            cardImg.id = this.id
+            cardImg.setAttribute('src', 'https://i.ibb.co/QJ2J9d2/cardback.png')  
+            cardContainer.appendChild(cardImg)
         } else {
             cardImg.classList.add(this.month)
             cardImg.classList.add(this.category)
