@@ -75,11 +75,8 @@ class Card {
                 player_id: parseInt(boardPlayer.id)
             })
         })
-        .then(function(data) {
-            Card.loadPlayerCards(boardPlayer)
-            Card.loadPlayerCards(userPlayer)
-        })
-        .then(resp => game.playTurn());
+        .then(resp => Card.loadPlayerCards(boardPlayer))
+        .then(resp => Card.loadPlayerCards(userPlayer))
     }
 
     // playCard() {
@@ -108,12 +105,15 @@ class Card {
     }
 
     static loadPlayerCardsHtml(player) {
+        debugger
         let playerDiv = document.getElementsByClassName(`player-${player.data.id}`)[0];
         playerDiv.innerHTML = "";
     
         player.data.attributes.cards.forEach(function(card) {
             new Card(card.id, card.category, card.image, card.matched, card.player_id, card.month)
         });
+
+        game.playTurn();
     }
 
 

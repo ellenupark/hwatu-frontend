@@ -30,7 +30,7 @@ class Game {
         return this.players.find(x => x.role === "deck")
     }
 
-    get currentPlayer() {
+    currentPlayer() {
         game.turnCount % 2 === 0 ? this.computer : this.user;
     }
 
@@ -44,7 +44,7 @@ class Game {
         cardInPlay.classList.add("highlight");
 
         let pairs = currentBoard.filter(x => x.dataset.month == cardInPlay.dataset.month && x !== cardInPlay) 
-
+        debugger
         switch (pairs.length) {
             case 1:
                 pairs.forEach(function(card) {
