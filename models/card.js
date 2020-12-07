@@ -12,7 +12,7 @@ class Card {
 
 
     renderCard() {
-        const cardContainer = document.getElementById(`player-${this.playerId}`);
+        const cardContainer = document.getElementsByClassName(`player-${this.playerId}`)[0];
         const cardImg = document.createElement('img')
 
         if (this.playerId == deck.id) {
@@ -29,11 +29,12 @@ class Card {
         } else {
             cardImg.classList.add(this.month)
             cardImg.classList.add(this.category)
-            cardImg.id = this.id
+            cardImg.id = `card-${this.id}`
             cardImg.setAttribute('src', this.image)
-            if (this.playerId == user.id) {
-                cardImg.addEventListener('click', this.playCard)
-            }
+
+            // if (this.playerId == user.id) {
+            //     cardImg.addEventListener('click', this.playCard)
+            // }
 
             cardContainer.appendChild(cardImg)
         }
@@ -56,8 +57,11 @@ class Card {
         return cardImg;
     }
 
-    playCard() {
-        fetch(`http://localhost:3000/cards/${this.id}`, {
+    static playCard() {
+        debugger
+
+
+        fetch(`http://localhost:3000/[cards/${this.id}]`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -72,6 +76,23 @@ class Card {
             Card.loadPlayerCards(user)
         })
     }
+
+    // playCard() {
+    //     fetch(`http://localhost:3000/cards/${this.id}`, {
+    //         method: "PATCH",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //             "Accept": "application/json"
+    //         },
+    //         body: JSON.stringify({
+    //             player_id: board.id
+    //         })
+    //     })
+    //     .then(function(data) {
+    //         Card.loadPlayerCards(board)
+    //         Card.loadPlayerCards(user)
+    //     })
+    // }
 
     static loadPlayerCards(player) {
         fetch(`http://localhost:3000/players/${player.id}`)

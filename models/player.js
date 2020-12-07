@@ -27,7 +27,7 @@ class Player {
 
     renderPlayer(){
         let playerDiv = document.getElementById(`${this.role}-container`)
-        playerDiv.id = `player-${this.id}`;
+        playerDiv.classList.add(`player-${this.id}`);
     };
 
     assignPlayerVariable() {

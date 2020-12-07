@@ -23,7 +23,7 @@ const gameURL = "http://localhost:3000/games"
 const playGame = async () => {
   await API.addPlayersAndCards();
   await loadGame();
-  debugger
+  // Card.playCard()
 
   // Play turn function
   
