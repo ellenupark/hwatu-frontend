@@ -55,7 +55,6 @@ class Game {
         let pairs = currentBoard.filter(x => x.dataset.month == cardInPlay.dataset.month && x !== cardInPlay) 
         switch (pairs.length) {
             case 1:
-                debugger
                 pairs.forEach(function(card) {
                     card.classList.add('highlight');
                     card.dataset.matched = `${game.currentPlayer.role}`
@@ -77,7 +76,6 @@ class Game {
                 this.retrieveCardFromDeck();
                 break;
             case 0:
-                debugger
                 this.retrieveCardFromDeck();
                 break;
         };
@@ -88,11 +86,9 @@ class Game {
     };
 
     retrieveCardFromDeck() {
-        debugger
         fetch(`http://localhost:3000/players/${this.deck.id}`)
         .then(res => res.json())
         .then(player => {
-            debugger
             this.selectRandomCardAndMoveToDeck(player);
         });
     };
@@ -100,7 +96,6 @@ class Game {
     selectRandomCardAndMoveToDeck(player) {
         this.midTurn = false;
         let topCard = sample(player.data.attributes.cards);
-        debugger
         fetch(`http://localhost:3000/cards/${topCard.id}`, {
             method: "PATCH",
             headers: {
@@ -121,8 +116,40 @@ class Game {
     }
 
     collectPairsFromBoard() {
-        debugger
         console.log('Collect pairs from board and assign to player.')
+
+    //     let currentBoard = Array.from(game.playerCardDiv('board').children);
+    //     cardInPlay.dataset.matched = `${game.currentPlayer.role}`
+
+    //     cardInPlay.classList.add("highlight");
+
+    //     let pairs = currentBoard.filter(x => x.dataset.month == cardInPlay.dataset.month && x !== cardInPlay) 
+    //     switch (pairs.length) {
+    //         case 1:
+    //             pairs.forEach(function(card) {
+    //                 card.classList.add('highlight');
+    //                 card.dataset.matched = `${game.currentPlayer.role}`
+    //                 cardInPlay.dataset.matched = `${game.currentPlayer.role}`
+    //             });
+    //             this.retrieveCardFromDeck();
+    //             break;
+    //         case 2:
+    //             pairs.forEach(function(card) {
+    //                 card.classList.add('highlight');
+    //             });
+    //             // Allow User to pick which card to pair with
+    //             this.retrieveCardFromDeck();
+    //             break;
+    //         case 3:
+    //             pairs.forEach(function(card) {
+    //                 card.classList.add('highlight');
+    //             });
+    //             this.retrieveCardFromDeck();
+    //             break;
+    //         case 0:
+    //             this.retrieveCardFromDeck();
+    //             break;
+    //     };
     }
 };
 

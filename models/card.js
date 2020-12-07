@@ -66,12 +66,10 @@ class Card {
             })
         })
         .then(function(resp) {
-            debugger
             Card.loadPlayerCards(boardPlayer);
             return resp;
         })
         .then(function(resp) {
-            debugger
             Card.loadPlayerCards(userPlayer);
             return resp;
         })
@@ -86,7 +84,6 @@ class Card {
     }
 
     static loadPlayerCardsHtml(player) {
-        debugger
         let playerDiv = document.getElementsByClassName(`player-${player.data.id}`)[0];
         playerDiv.innerHTML = "";
     
@@ -95,11 +92,66 @@ class Card {
         });
 
         if (game.midTurn == true && player.data.attributes.role == 'user') {
-            debugger
             game.playTurn();
-        } else if (player.data.attributes.role == 'user') {
+        } else if (player.data.attributes.role == 'board' && game.midTurn == false) {
             game.collectPairsFromBoard();
         }
+    }
+
+    static dealCards() {
+        fetch(`http://localhost:3000/cards`)
+            .then(resp => resp.json())
+            .then(function(cards) {
+                Card.assignCards(cards)
+            })
+    }
+
+    static assignCards(cards) {
+        let player_list = {
+            user: {
+                count: 8,
+                id: game.user.id
+            },
+            computer: {
+                count: 8,
+                id: game.computer.id
+            },
+            deck: {
+                count: 22,
+                id: game.deck.id
+            },
+            board: {
+                count: 10,
+                id: game.board.id
+            }
+        }
+
+        Object.keys(player_list).forEach(function(player) {
+            document.getElementById(`${player}-container`).innerHTML = "";
+        })
+
+        cards.data.forEach(function(card) {
+            let assignedPlayer = sample(Object.keys(player_list))
+            fetch(`http://localhost:3000/cards/${card.id}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    player_id: parseInt(player_list[assignedPlayer].id)
+                })
+            })
+
+            player_list[assignedPlayer].count -= 1;
+
+            if (player_list[assignedPlayer].count == 0) {
+                delete player_list[assignedPlayer]
+            }            
+        });
+
+        API.addPlayersAndCards();
+        Card.addPlayCardEventToUser();
     }
 
 
