@@ -1,8 +1,3 @@
-let computer;
-let user;
-let board;
-let deck;
-
 class Player {
     constructor(id, role, username) {
         this.id = id;
@@ -10,7 +5,6 @@ class Player {
         this.username = username;
         this.renderPlayer();
         game.add(this)
-        this.assignPlayerVariable()
     };
 
     // playerHTML() {
@@ -29,21 +23,4 @@ class Player {
         let playerDiv = document.getElementById(`${this.role}-container`)
         playerDiv.classList.add(`player-${this.id}`);
     };
-
-    assignPlayerVariable() {
-        switch (this.role) {
-            case 'computer':
-                computer = this;
-                break;
-            case 'user':
-                user = this;
-                break;
-            case 'board':
-                board = this;
-                break;
-            case 'deck':
-                deck = this;
-                break;
-        }   
-    }
 };

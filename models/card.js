@@ -14,12 +14,12 @@ class Card {
         const cardContainer = document.getElementsByClassName(`player-${this.playerId}`)[0];
         const cardImg = document.createElement('img')
 
-        if (this.playerId == deck.id) {
+        if (this.playerId == game.deck.id) {
             if (cardContainer.childElementCount === 0) {
                 cardImg.setAttribute('src', "https://i.ibb.co/QJ2J9d2/cardback.png");
                 cardContainer.appendChild(cardImg)
             }
-        } else if (this.playerId == computer.id) {
+        } else if (this.playerId == game.computer.id) {
             cardImg.classList.add(this.month)
             cardImg.classList.add(this.category)
             cardImg.id = this.id
@@ -76,7 +76,7 @@ class Card {
                 "Accept": "application/json"
             },
             body: JSON.stringify({
-                player_id: parseInt(board.id)
+                player_id: parseInt(boardPlayer.id)
             })
         })
         .then(function(data) {
