@@ -50,7 +50,7 @@ class Card {
     }
 
     static moveCardToBoard() {
-        game.started = true;
+        game.midTurn = true;
         const cardId = this.id.split('-')[1];
         const boardPlayer = game.players.find(x => x.role === 'board');
         const userPlayer = game.players.find(x => x.role === 'user');
@@ -65,26 +65,17 @@ class Card {
                 player_id: parseInt(boardPlayer.id)
             })
         })
-        .then(resp => Card.loadPlayerCards(boardPlayer))
-        .then(resp => Card.loadPlayerCards(userPlayer))
+        .then(function(resp) {
+            debugger
+            Card.loadPlayerCards(boardPlayer);
+            return resp;
+        })
+        .then(function(resp) {
+            debugger
+            Card.loadPlayerCards(userPlayer);
+            return resp;
+        })
     }
-
-    // playCard() {
-    //     fetch(`http://localhost:3000/cards/${this.id}`, {
-    //         method: "PATCH",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //             "Accept": "application/json"
-    //         },
-    //         body: JSON.stringify({
-    //             player_id: board.id
-    //         })
-    //     })
-    //     .then(function(data) {
-    //         Card.loadPlayerCards(board)
-    //         Card.loadPlayerCards(user)
-    //     })
-    // }
 
     static loadPlayerCards(player) {
         fetch(`http://localhost:3000/players/${player.id}`)
@@ -95,6 +86,7 @@ class Card {
     }
 
     static loadPlayerCardsHtml(player) {
+        debugger
         let playerDiv = document.getElementsByClassName(`player-${player.data.id}`)[0];
         playerDiv.innerHTML = "";
     
@@ -102,7 +94,12 @@ class Card {
             new Card(card.id, card.category, card.image, card.matched, card.player_id, card.month)
         });
 
-        game.playTurn();
+        if (game.midTurn == true && player.data.attributes.role == 'user') {
+            debugger
+            game.playTurn();
+        } else if (player.data.attributes.role == 'user') {
+            game.collectPairsFromBoard();
+        }
     }
 
 

@@ -3,10 +3,15 @@ class Game {
         this.players = [];
         this.turnCount = 1;
         this.started = false;
+        this.midTurn = false;
         this.deckCount = 22;
         // this.playTurn();
         // this.user = user;
         // this.computer = computer;
+    };
+
+    set midturn(midturn) {
+        this.midturn = midturn;
     };
 
     add(player){
@@ -30,8 +35,12 @@ class Game {
         return this.players.find(x => x.role === "deck")
     }
 
-    currentPlayer() {
-        game.turnCount % 2 === 0 ? this.computer : this.user;
+    get currentPlayer() {
+        if (this.turnCount % 2 === 0) {
+            return this.computer;
+        } else {
+            return this.user;
+        }
     }
 
     playerCardDiv(roleAsString) {
@@ -46,10 +55,11 @@ class Game {
         let pairs = currentBoard.filter(x => x.dataset.month == cardInPlay.dataset.month && x !== cardInPlay) 
         switch (pairs.length) {
             case 1:
+                debugger
                 pairs.forEach(function(card) {
                     card.classList.add('highlight');
-                    card.dataset.matched = `${this.currentPlayer.role}`
-                    cardInPlay.dataset.matched = `${this.currentPlayer.role}`
+                    card.dataset.matched = `${game.currentPlayer.role}`
+                    cardInPlay.dataset.matched = `${game.currentPlayer.role}`
                 });
                 this.retrieveCardFromDeck();
                 break;
@@ -58,14 +68,16 @@ class Game {
                     card.classList.add('highlight');
                 });
                 // Allow User to pick which card to pair with
-                this.selectCardToPairWith(pairs);
+                this.retrieveCardFromDeck();
                 break;
             case 3:
                 pairs.forEach(function(card) {
                     card.classList.add('highlight');
                 });
+                this.retrieveCardFromDeck();
                 break;
             case 0:
+                debugger
                 this.retrieveCardFromDeck();
                 break;
         };
@@ -76,21 +88,41 @@ class Game {
     };
 
     retrieveCardFromDeck() {
+        debugger
         fetch(`http://localhost:3000/players/${this.deck.id}`)
         .then(res => res.json())
         .then(player => {
+            debugger
             this.selectRandomCardAndMoveToDeck(player);
         });
     };
 
     selectRandomCardAndMoveToDeck(player) {
+        this.midTurn = false;
+        let topCard = sample(player.data.attributes.cards);
         debugger
+        fetch(`http://localhost:3000/cards/${topCard.id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({
+                player_id: parseInt(game.board.id)
+            })
+        })
+        .then(resp => Card.loadPlayerCards(game.board))
     }
 
     playTurn() {
         // while (game.deckCount > 0) {
             this.checkBoardForPairs()
         // }
+    }
+
+    collectPairsFromBoard() {
+        debugger
+        console.log('Collect pairs from board and assign to player.')
     }
 };
 
