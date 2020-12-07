@@ -1,7 +1,7 @@
 class API {
     // move our initial fetch into a function here 
 
-    static async addPlayersAndCards(){
+    static addPlayersAndCards(){
         fetch("http://localhost:3000/players")
             .then(resp => resp.json())
             .then(players => {

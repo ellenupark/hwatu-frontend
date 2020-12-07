@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", function(){
-    // API.addPlayersAndCards()
-    // loadGame();
+    API.addPlayersAndCards()
+    loadGame();
 
-    playGame();
+
     
     // API.addPlayersAndCards()
     // createCardList()
@@ -20,16 +20,7 @@ const mainGameDiv = document.getElementById('main-game')
 const navBar = document.getElementById('nav-bar')
 const gameURL = "http://localhost:3000/games"
 
-const playGame = async () => {
-  await API.addPlayersAndCards();
-  await loadGame();
-  // Card.playCard()
-
-  // Play turn function
-  
-}
-
-async function loadGame() {
+function loadGame() {
     // identify the form element
     // add the event listener to the form for the form submit
     gameForm.addEventListener("submit", function(event){
@@ -54,7 +45,8 @@ async function loadGame() {
         .then(resp => resp.json())
         .then(data => {
           if (!data.errors){
-            revealBoard()
+            revealBoard();
+            Card.addPlayCardEventToUser();
           } else {
             throw new Error( `${data.errors}`)
           }

@@ -59,7 +59,7 @@ class Players {
       return player
     }
 
-    get allPlayers(){
+    get all() {
       return this.players
     }
     // this could include summary stats like average score, etc. For simplicy, just the count for now

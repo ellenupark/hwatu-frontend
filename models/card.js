@@ -10,7 +10,6 @@ class Card {
         // this.addToCardSummary()
     };
 
-
     renderCard() {
         const cardContainer = document.getElementsByClassName(`player-${this.playerId}`)[0];
         const cardImg = document.createElement('img')
@@ -57,23 +56,32 @@ class Card {
         return cardImg;
     }
 
-    static playCard() {
-        debugger
+    static addPlayCardEventToUser() {
+        let userCards = Array.from(document.getElementById('user-container').children);
 
+        userCards.forEach(function(card) {
+            card.addEventListener('click', Card.moveCardToBoard)
+        })
+    }
 
-        fetch(`http://localhost:3000/[cards/${this.id}]`, {
+    static moveCardToBoard() {
+        const cardId = this.id.split('-')[1];
+        const boardPlayer = allPlayers.all.find(x => x.role === 'board');
+        const userPlayer = allPlayers.all.find(x => x.role === 'user');
+
+        fetch(`http://localhost:3000/cards/${cardId}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
             },
             body: JSON.stringify({
-                player_id: board.id
+                player_id: parseInt(board.id)
             })
         })
         .then(function(data) {
-            Card.loadPlayerCards(board)
-            Card.loadPlayerCards(user)
+            Card.loadPlayerCards(boardPlayer)
+            Card.loadPlayerCards(userPlayer)
         })
     }
 
@@ -103,7 +111,7 @@ class Card {
     }
 
     static loadPlayerCardsHtml(player) {
-        let playerDiv = document.getElementById(`player-${player.data.id}`);
+        let playerDiv = document.getElementsByClassName(`player-${player.data.id}`)[0];
         playerDiv.innerHTML = "";
     
         player.data.attributes.cards.forEach(function(card) {
@@ -134,7 +142,6 @@ function loadPlayerCardsHtml(player) {
     player.data.attributes.cards.forEach(function(card) {
         let newImg = document.createElement("img");
         newImg.setAttribute('src', card.image)
-        newImg.addEventListener('click', playCard());
         playerDiv.appendChild(newImg)
     });
 }
