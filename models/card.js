@@ -41,7 +41,8 @@ class Card {
         return cardImg;
     }
 
-    static addPlayCardEventToUser() {
+    static async addPlayCardEventToUser() {
+        debugger
         let userCards = Array.from(document.getElementById('user-container').children);
 
         userCards.forEach(function(card) {
@@ -50,6 +51,7 @@ class Card {
     }
 
     static moveCardToBoard() {
+        debugger
         game.midTurn = true;
         const cardId = this.id.split('-')[1];
         const boardPlayer = game.players.find(x => x.role === 'board');
@@ -98,7 +100,7 @@ class Card {
         }
     }
 
-    static dealCards() {
+    static async dealCards() {
         fetch(`http://localhost:3000/cards`)
             .then(resp => resp.json())
             .then(function(cards) {
@@ -106,7 +108,7 @@ class Card {
             })
     }
 
-    static assignCards(cards) {
+    static async assignCards(cards) {
         let player_list = {
             user: {
                 count: 8,
@@ -150,8 +152,8 @@ class Card {
             }            
         });
 
-        API.addPlayersAndCards();
-        Card.addPlayCardEventToUser();
+        game.players = [];
+        API.reloadPlayersAndCards();
     }
 
 

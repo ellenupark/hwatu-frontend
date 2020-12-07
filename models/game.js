@@ -60,23 +60,24 @@ class Game {
                     card.dataset.matched = `${game.currentPlayer.role}`
                     cardInPlay.dataset.matched = `${game.currentPlayer.role}`
                 });
-                this.retrieveCardFromDeck();
+
+                setTimeout(this.retrieveCardFromDeck(), 3000)
                 break;
             case 2:
                 pairs.forEach(function(card) {
                     card.classList.add('highlight');
                 });
                 // Allow User to pick which card to pair with
-                this.retrieveCardFromDeck();
+                setTimeout(this.retrieveCardFromDeck(), 3000)
                 break;
             case 3:
                 pairs.forEach(function(card) {
                     card.classList.add('highlight');
                 });
-                this.retrieveCardFromDeck();
+                setTimeout(this.retrieveCardFromDeck(), 3000)
                 break;
             case 0:
-                this.retrieveCardFromDeck();
+                setTimeout(this.retrieveCardFromDeck(), 3000)
                 break;
         };
     };
