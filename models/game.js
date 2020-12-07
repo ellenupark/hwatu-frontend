@@ -27,6 +27,14 @@ class Game {
     get deck() {
         return this.players.find(x => x.role === "deck")
     }
+
+    playerCardDiv(roleAsString) {
+        return document.getElementById(`${roleAsString}-container`)
+    }
+
+    checkBoardForPairs() {
+        const currentBoard = game.playerCardDiv('board').children;
+    };
 };
 
 const game = new Game();

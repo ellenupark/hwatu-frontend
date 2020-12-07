@@ -20,21 +20,16 @@ class Card {
                 cardContainer.appendChild(cardImg)
             }
         } else if (this.playerId == game.computer.id) {
-            cardImg.classList.add(this.month)
-            cardImg.classList.add(this.category)
-            cardImg.id = this.id
+            cardImg.dataset.month = this.month;
+            cardImg.dataset.category = this.category;
+            cardImg.id = `card-${this.id}`
             cardImg.setAttribute('src', 'https://i.ibb.co/QJ2J9d2/cardback.png')  
             cardContainer.appendChild(cardImg)
         } else {
-            cardImg.classList.add(this.month)
-            cardImg.classList.add(this.category)
+            cardImg.dataset.month = this.month;
+            cardImg.dataset.category = this.category;
             cardImg.id = `card-${this.id}`
             cardImg.setAttribute('src', this.image)
-
-            // if (this.playerId == user.id) {
-            //     cardImg.addEventListener('click', this.playCard)
-            // }
-
             cardContainer.appendChild(cardImg)
         }
     }
