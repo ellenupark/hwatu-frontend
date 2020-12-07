@@ -9,7 +9,7 @@ class Player {
         this.role = role;
         this.username = username;
         this.renderPlayer();
-        allPlayers.addPlayer(this)
+        game.add(this)
         this.assignPlayerVariable()
     };
 
@@ -47,25 +47,3 @@ class Player {
         }   
     }
 };
-
-class Players {
-    constructor(){
-      this.players = []
-    }
-
-    // create a new player and save it in the collection
-    addPlayer(player){
-      this.players.push(player)
-      return player
-    }
-
-    get all() {
-      return this.players
-    }
-    // this could include summary stats like average score, etc. For simplicy, just the count for now
-    get numberOfPlayers(){
-        return this.players.length
-    }
-}  
-
-const allPlayers = new Players();

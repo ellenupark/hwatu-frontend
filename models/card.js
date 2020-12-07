@@ -66,8 +66,8 @@ class Card {
 
     static moveCardToBoard() {
         const cardId = this.id.split('-')[1];
-        const boardPlayer = allPlayers.all.find(x => x.role === 'board');
-        const userPlayer = allPlayers.all.find(x => x.role === 'user');
+        const boardPlayer = game.players.find(x => x.role === 'board');
+        const userPlayer = game.players.find(x => x.role === 'user');
 
         fetch(`http://localhost:3000/cards/${cardId}`, {
             method: "PATCH",
@@ -127,21 +127,21 @@ function downcaseFirstLetter(string) {
     return string.charAt(0).toLowerCase() + string.slice(1);
 }
 
-function loadPlayerCards(player) {
-    fetch(`http://localhost:3000/players/${player.id}`)
-    .then(resp => resp.json())
-    .then(function(resp) {
-        loadPlayerCardsHtml(resp)
-    })
-}
+// function loadPlayerCards(player) {
+//     fetch(`http://localhost:3000/players/${player.id}`)
+//     .then(resp => resp.json())
+//     .then(function(resp) {
+//         loadPlayerCardsHtml(resp)
+//     })
+// }
 
-function loadPlayerCardsHtml(player) {
-    let playerDiv = document.getElementById(`player-${player.data.id}`);
-    playerDiv.innerHTML = "";
+// function loadPlayerCardsHtml(player) {
+//     let playerDiv = document.getElementById(`player-${player.data.id}`);
+//     playerDiv.innerHTML = "";
 
-    player.data.attributes.cards.forEach(function(card) {
-        let newImg = document.createElement("img");
-        newImg.setAttribute('src', card.image)
-        playerDiv.appendChild(newImg)
-    });
-}
+//     player.data.attributes.cards.forEach(function(card) {
+//         let newImg = document.createElement("img");
+//         newImg.setAttribute('src', card.image)
+//         playerDiv.appendChild(newImg)
+//     });
+// }

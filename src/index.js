@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function(){
     API.addPlayersAndCards()
-    loadGame();
+    playGame()
 
 
     
@@ -20,7 +20,11 @@ const mainGameDiv = document.getElementById('main-game')
 const navBar = document.getElementById('nav-bar')
 const gameURL = "http://localhost:3000/games"
 
-function loadGame() {
+async function playGame() { 
+  await loadGame();
+}
+
+async function loadGame() {
     // identify the form element
     // add the event listener to the form for the form submit
     gameForm.addEventListener("submit", function(event){
