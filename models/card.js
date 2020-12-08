@@ -137,6 +137,15 @@ class Card {
         });
         return cards;
     }
+
+    static renderCardHtml(card) {
+        let newCard = document.createElement('img');
+        newCard.dataset.month = card.month;
+        newCard.dataset.category = card.category;
+        newCard.id = `card-${card.id}`
+        newCard.setAttribute('src', card.image);
+        return newCard;
+    }
 };
 
 

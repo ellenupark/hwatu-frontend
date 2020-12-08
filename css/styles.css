@@ -126,3 +126,10 @@ img {
     max-width: 45%;
     margin: 0 auto;
 }
+
+/* Instruction Notification */
+.rule-notice {
+    background-color: lightpink;
+    border: 2px solid grey;
+    padding: 5px;
+}

@@ -1,3 +1,10 @@
+const boardContainer = document.getElementById('board-container');
+const deckContainer = document.getElementById('deck-container');
+const userContainer = document.getElementById('user-container');
+const computerContainer = document.getElementById('computer-container');
+const userPairs = document.getElementById('user-pairs');
+const computerPairs = document.getElementById('computer-pairs');
+
 class Game {
     constructor() {
         this.players = [];
@@ -41,69 +48,6 @@ class Game {
         return document.getElementById(`${roleAsString}-container`)
     }
 
-    checkBoardForPairs() {
-        let currentBoard = Array.from(game.playerCardDiv('board').children);
-        const cardInPlay = game.playerCardDiv('board').lastChild;
-        cardInPlay.classList.add("highlight");
-
-        let pairs = currentBoard.filter(x => x.dataset.month == cardInPlay.dataset.month && x !== cardInPlay) 
-        switch (pairs.length) {
-            case 1:
-                pairs.forEach(function(card) {
-                    card.classList.add('highlight');
-                    card.dataset.matched = `${game.currentPlayer.role}`
-                    cardInPlay.dataset.matched = `${game.currentPlayer.role}`
-                });
-
-                setTimeout(this.retrieveCardFromDeck(), 3000)
-                break;
-            case 2:
-                pairs.forEach(function(card) {
-                    card.classList.add('highlight');
-                });
-                // Allow User to pick which card to pair with
-                setTimeout(this.retrieveCardFromDeck(), 3000)
-                break;
-            case 3:
-                pairs.forEach(function(card) {
-                    card.classList.add('highlight');
-                });
-                setTimeout(this.retrieveCardFromDeck(), 3000)
-                break;
-            case 0:
-                setTimeout(this.retrieveCardFromDeck(), 3000)
-                break;
-        };
-    };
-
-    selectCardToPairWith(pairs) {
-        debugger
-    };
-
-    retrieveCardFromDeck() {
-        fetch(`http://localhost:3000/players/${this.deck.id}`)
-        .then(res => res.json())
-        .then(player => {
-            this.selectRandomCardAndMoveToDeck(player);
-        });
-    };
-
-    selectRandomCardAndMoveToDeck(player) {
-        this.midTurn = false;
-        let topCard = sample(player.data.attributes.cards);
-        fetch(`http://localhost:3000/cards/${topCard.id}`, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            body: JSON.stringify({
-                player_id: parseInt(game.board.id)
-            })
-        })
-        .then(resp => Card.loadPlayerCards(game.board))
-    }
-
     collectPairsFromBoard() {
         console.log('Collect pairs from board and assign to player.')
     }
@@ -134,25 +78,94 @@ class Game {
         
         switch (pairs.length) {
             case 0:
+                Game.flipCardFromDeck();
                 break;
             case 1:
                 pairs[0].classList.add('highlight')
+                pairs[0].classList.add('set')
+                Game.flipCardFromDeck();
                 break;
             case 2:
                 pairs.forEach(function(card) {
                     card.classList.add('highlight');
                 });
                 // Allow User to pick which card to pair with
-                Game.displayPickCardInstructions() 
-                
+                Game.displayPickCardInstructions();
+                Game.pickCardToPair();
                 break;
             case 3:
                 pairs.forEach(function(card) {
                     card.classList.add('highlight');
+                    card.classList.add('set');
                 });
+                Game.flipCardFromDeck();
                 break;
         };
 
+    }
+
+    static displayPickCardInstructions() {
+        const notice = document.getElementById('instruction-display');
+        notice.innerHTML += `
+        <div class="rule-notice">
+            <p>Select Card to Pair With!</p>
+        </div>
+        `
+    }
+
+    static pickCardToPair() {
+        let cardsOnBoard = Array.from(document.getElementById('board-container').children);
+        let pairs = cardsOnBoard.filter(c => c.classList.contains('highlight'));
+        
+        pairs.forEach(function(card) {
+            card.addEventListener('click', Game.selectCardToPairWith)
+        })
+    }
+
+    static selectCardToPairWith() {
+        let cardsOnBoard = Array.from(document.getElementById('board-container').children);
+        let pairs = cardsOnBoard.filter(c => c.classList.contains('highlight'));
+
+        pairs.forEach(function(card) {
+            if (card !== event.target) {
+                card.classList.remove('highlight');
+            }
+        })
+
+        Game.flipCardFromDeck();
+        event.target.classList.add('set')
+        event.target.removeEventListener('click', Game.selectCardToPairWith)
+    }
+
+    static flipCardFromDeck() {
+        debugger
+        fetch(`http://localhost:3000/players/${game.deck.id}`)
+        .then(resp => resp.json())
+        .then(deck => {
+            Game.selectRandomCardFromDeck(deck);
+        });
+    };
+
+    static selectRandomCardFromDeck(deck) {
+        let randomCard = sample(deck.data.attributes.cards);
+
+        fetch(`http://localhost:3000/cards/${randomCard.id}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    player_id: game.board.id
+                })
+            })
+
+        let randomCardHtml = Card.renderCardHtml(randomCard);
+        
+        setTimeout(function () {
+            boardContainer.appendChild(randomCardHtml);
+            return;
+        }, 1000);
     }
 };
 
