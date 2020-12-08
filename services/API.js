@@ -1,16 +1,13 @@
 class API {
 
-    static async addPlayersAndCards(){
-        this.loadPlayers();
+    static addPlayersAndCards(){
+        this.loadPlayers()
         this.loadCards();
     };
 
-    static loadCards() {
-        fetch("http://localhost:3000/cards")
-        .then(resp => resp.json())
-        .then(cards => {
-            API.createCards(cards);
-        })
+    static async loadCards() {
+        let cards = await Card.dealCards();
+        return API.createCards(cards);
     };
 
     static loadPlayers() {
@@ -18,19 +15,21 @@ class API {
         .then(resp => resp.json())
         .then(players => {
             API.createPlayers(players);
+            return players;
         }) 
     };
 
-    static async createPlayers(players) {
+    static createPlayers(players) {
         players.data.forEach(player => {
             new Player(player.id, player.attributes.role)
         })
     };
 
-    static async createCards(cards) {
+    static createCards(cards) {
         cards.data.forEach(card => {
-            new Card(card.id, card.attributes.category, card.attributes.image, card.attributes.matched, card.relationships.player.data.id, card.attributes.month)
+            new Card(card.id, card.attributes.category, card.attributes.image, card.attributes.matched, card.attributes.player.id, card.attributes.player.role, card.attributes.month)
         })
+        return cards;
     };
 
     static createCardSummary() {
@@ -40,11 +39,12 @@ class API {
                cards.data.forEach(card => {
                 API.loadCardsToSummary(card);
                })
+               return cards;
             }) 
     };
 
-    static loadUserName() {
-        fetch("http://localhost:3000/games")
+    static async loadUserName() {
+        return fetch("http://localhost:3000/games")
             .then(resp => resp.json())
             .then(cards => {
                cards.data.forEach(card => {
@@ -77,7 +77,7 @@ class API {
                 })
                 players.data.forEach(player => {
                     player.attributes.cards.forEach(card => {
-                        new Card(card.id, card.category, card.image, card.matched, card.player_id, card.month)
+                        new Card(card.id, card.attributes.category, card.attributes.image, card.attributes.matched, card.attributes.player.id, card.attributes.player.role, card.attributes.month)
                     })
                 })
             })

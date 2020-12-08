@@ -1,36 +1,43 @@
 class Card {
-    constructor(id, category, image, matched, playerId, month) {
+    constructor(id, category, image, matched, playerId, playerRole, month) {
         this.id = id;
         this.category = category;
         this.image = image;
         this.matched = matched; 
         this.playerId = playerId;
+        this.playerRole = playerRole;
         this.month = month;
         this.renderCard();
     };
 
     renderCard() {
-        const cardContainer = document.getElementsByClassName(`player-${this.playerId}`)[0];
+        const cardContainer = document.getElementById(`${this.playerRole}-container`);
         const cardImg = document.createElement('img')
 
-        if (this.playerId == game.deck.id) {
-            if (cardContainer.childElementCount === 0) {
-                cardImg.setAttribute('src', "https://i.ibb.co/QJ2J9d2/cardback.png");
-                cardContainer.appendChild(cardImg)
-            }
-        } else if (this.playerId == game.computer.id) {
-            cardImg.dataset.month = this.month;
-            cardImg.dataset.category = this.category;
-            cardImg.id = `card-${this.id}`
-            cardImg.setAttribute('src', 'https://i.ibb.co/QJ2J9d2/cardback.png')  
-            cardContainer.appendChild(cardImg)
-        } else {
-            cardImg.dataset.month = this.month;
-            cardImg.dataset.category = this.category;
-            cardImg.id = `card-${this.id}`
-            cardImg.setAttribute('src', this.image)
-            cardContainer.appendChild(cardImg)
+        switch (this.playerRole) {
+            case 'deck':
+                if (cardContainer.childElementCount === 0) {
+                    cardImg.setAttribute('src', "https://i.ibb.co/QJ2J9d2/cardback.png");
+                } else {
+                    return;
+                }
+                break; 
+            case 'computer':
+                cardImg.dataset.month = this.month;
+                cardImg.dataset.category = this.category;
+                cardImg.id = `card-${this.id}`
+                cardImg.classList.add(`${this.playerRole}-test`)
+                cardImg.setAttribute('src', 'https://i.ibb.co/QJ2J9d2/cardback.png')
+                break;
+            default:
+                cardImg.dataset.month = this.month;
+                cardImg.dataset.category = this.category;
+                cardImg.id = `card-${this.id}`
+                cardImg.classList.add(`${this.playerRole}-test`)
+                cardImg.setAttribute('src', this.image);
+                break;
         }
+        cardContainer.appendChild(cardImg);
     }
 
     createCardImgHtml() {
@@ -39,14 +46,6 @@ class Card {
         cardImg.style.maxWidth = "45px";
         return cardImg;
     }
-
-    // static addPlayCardEventToUser() {
-    //     let userCards = Array.from(document.getElementById('user-container').children);
-
-    //     userCards.forEach(function(card) {
-    //         card.addEventListener('click', Card.moveCardToBoard)
-    //     })
-    // }
 
     static moveCardToBoard() {
         let cardInPlay = document.createElement('img');
@@ -66,30 +65,6 @@ class Card {
         })
     }
 
-    // static moveCardToBoard() {
-    //     game.midTurn = true;
-    //     const cardId = this.id.split('-')[1];
-    //     const boardPlayer = game.players.find(x => x.role === 'board');
-    //     const userPlayer = game.players.find(x => x.role === 'user');
-
-    //     fetch(`http://localhost:3000/cards/${cardId}`, {
-    //         method: "PATCH",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //             "Accept": "application/json"
-    //         },
-    //         body: JSON.stringify({
-    //             player_id: parseInt(boardPlayer.id)
-    //         })
-    //     })
-    //     .then(function(resp) {
-    //         Card.loadPlayerCards(boardPlayer);
-    //     })
-    //     .then(function(resp) {
-    //         Card.loadPlayerCards(userPlayer);
-    //     })
-    // }
-
     static loadPlayerCards(player) {
         fetch(`http://localhost:3000/players/${player.id}`)
             .then(resp => resp.json())
@@ -105,19 +80,14 @@ class Card {
         player.data.attributes.cards.forEach(function(card) {
             new Card(card.id, card.category, card.image, card.matched, card.player_id, card.month)
         });
-
-        // if (game.midTurn == true && player.data.attributes.role == 'user') {
-        //     game.playTurn();
-        // } else if (player.data.attributes.role == 'board' && game.midTurn == false) {
-        //     game.collectPairsFromBoard();
-        // }
     }
 
-    static dealCards() {
-        fetch(`http://localhost:3000/cards`)
+    static async dealCards() {
+        return fetch(`http://localhost:3000/cards`)
             .then(resp => resp.json())
-            .then(function(cards) {
-                Card.assignCards(cards)
+            .then(async function(resp) {
+                let cards = await Card.assignCards(resp)
+                return cards;
             })
     }
 
@@ -164,34 +134,11 @@ class Card {
                 delete player_list[assignedPlayer]
             }            
         });
-        API.loadCards();
+        return cards;
     }
-
-
-
-
 };
 
 
 function downcaseFirstLetter(string) {
     return string.charAt(0).toLowerCase() + string.slice(1);
 }
-
-// function loadPlayerCards(player) {
-//     fetch(`http://localhost:3000/players/${player.id}`)
-//     .then(resp => resp.json())
-//     .then(function(resp) {
-//         loadPlayerCardsHtml(resp)
-//     })
-// }
-
-// function loadPlayerCardsHtml(player) {
-//     let playerDiv = document.getElementById(`player-${player.data.id}`);
-//     playerDiv.innerHTML = "";
-
-//     player.data.attributes.cards.forEach(function(card) {
-//         let newImg = document.createElement("img");
-//         newImg.setAttribute('src', card.image)
-//         playerDiv.appendChild(newImg)
-//     });
-// }

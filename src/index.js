@@ -1,10 +1,8 @@
 document.addEventListener("DOMContentLoaded", function(){
-    API.loadPlayers();
-    Card.dealCards();
-    API.createCardSummary()
-
-    // Must wait for previous function to finish 
-    loadGame()
+  API.loadPlayers()
+  API.createCardSummary()
+  API.loadCards()
+  loadGame()
 })
 
 const gameForm = document.getElementById("form")
@@ -16,8 +14,6 @@ const navBar = document.getElementById('nav-bar')
 const gameURL = "http://localhost:3000/games"
 
 function loadGame() {
-    // identify the form element
-    // add the event listener to the form for the form submit
     gameForm.addEventListener("submit", function(event) {
         event.preventDefault()
         
