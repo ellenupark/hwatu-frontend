@@ -47,6 +47,7 @@ class Card {
         return cardImg;
     }
 
+    // Move played card to board and remove event listener from User cards
     static moveCardToBoard() {
         let cardInPlay = document.createElement('img');
         cardInPlay.setAttribute('src', `${event.target.src}`)

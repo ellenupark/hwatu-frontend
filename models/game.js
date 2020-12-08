@@ -108,6 +108,7 @@ class Game {
         console.log('Collect pairs from board and assign to player.')
     }
 
+    // Add Event Listener to User Cards (begin turn)
     playGame() {
         let userCards = Array.from(document.getElementById('user-container').children);
 
@@ -118,7 +119,41 @@ class Game {
 
     static playTurn() {
         Card.moveCardToBoard();
+        Game.highlightBoardPairs();
     };
+
+    static highlightBoardPairs() {
+        let pairsArray = [];
+
+        let playedCard = document.getElementById('played-container').children[0];
+        let playedCardMonth = playedCard.dataset.month;
+
+        let cardsOnBoard = Array.from(document.getElementById('board-container').children);
+
+        let pairs = cardsOnBoard.filter(c => c.dataset.month == playedCardMonth) 
+        
+        switch (pairs.length) {
+            case 0:
+                break;
+            case 1:
+                pairs[0].classList.add('highlight')
+                break;
+            case 2:
+                pairs.forEach(function(card) {
+                    card.classList.add('highlight');
+                });
+                // Allow User to pick which card to pair with
+                Game.displayPickCardInstructions() 
+                
+                break;
+            case 3:
+                pairs.forEach(function(card) {
+                    card.classList.add('highlight');
+                });
+                break;
+        };
+
+    }
 };
 
 const game = new Game();
