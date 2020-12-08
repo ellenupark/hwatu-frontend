@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function(){
+    // const game = new Game();
     API.addPlayersAndCards()
     loadGame()
 
@@ -75,3 +76,7 @@ function revealBoard() {
   mainGameDiv.classList.remove('hidden')
   navBar.classList.remove('hidden')
 }
+
+$('#myModal').on('shown.bs.modal', function () {
+  $('#myInput').trigger('focus')
+})

@@ -5,9 +5,6 @@ class Game {
         this.started = false;
         this.midTurn = false;
         this.deckCount = 22;
-        // this.playTurn();
-        // this.user = user;
-        // this.computer = computer;
     };
 
     set midturn(midturn) {
@@ -118,39 +115,6 @@ class Game {
 
     collectPairsFromBoard() {
         console.log('Collect pairs from board and assign to player.')
-
-    //     let currentBoard = Array.from(game.playerCardDiv('board').children);
-    //     cardInPlay.dataset.matched = `${game.currentPlayer.role}`
-
-    //     cardInPlay.classList.add("highlight");
-
-    //     let pairs = currentBoard.filter(x => x.dataset.month == cardInPlay.dataset.month && x !== cardInPlay) 
-    //     switch (pairs.length) {
-    //         case 1:
-    //             pairs.forEach(function(card) {
-    //                 card.classList.add('highlight');
-    //                 card.dataset.matched = `${game.currentPlayer.role}`
-    //                 cardInPlay.dataset.matched = `${game.currentPlayer.role}`
-    //             });
-    //             this.retrieveCardFromDeck();
-    //             break;
-    //         case 2:
-    //             pairs.forEach(function(card) {
-    //                 card.classList.add('highlight');
-    //             });
-    //             // Allow User to pick which card to pair with
-    //             this.retrieveCardFromDeck();
-    //             break;
-    //         case 3:
-    //             pairs.forEach(function(card) {
-    //                 card.classList.add('highlight');
-    //             });
-    //             this.retrieveCardFromDeck();
-    //             break;
-    //         case 0:
-    //             this.retrieveCardFromDeck();
-    //             break;
-    //     };
     }
 };
 

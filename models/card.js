@@ -42,7 +42,6 @@ class Card {
     }
 
     static async addPlayCardEventToUser() {
-        debugger
         let userCards = Array.from(document.getElementById('user-container').children);
 
         userCards.forEach(function(card) {
@@ -51,7 +50,6 @@ class Card {
     }
 
     static moveCardToBoard() {
-        debugger
         game.midTurn = true;
         const cardId = this.id.split('-')[1];
         const boardPlayer = game.players.find(x => x.role === 'board');
