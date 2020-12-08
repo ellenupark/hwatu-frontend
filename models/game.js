@@ -8,10 +8,6 @@ class Game {
         this.name = "";
     };
 
-    set midTurn(midturn) {
-        this.midturn = midturn;
-    };
-
     add(player){
         this.players.push(player)
         return player
@@ -108,15 +104,21 @@ class Game {
         .then(resp => Card.loadPlayerCards(game.board))
     }
 
-    playTurn() {
-        // while (game.deckCount > 0) {
-            this.checkBoardForPairs()
-        // }
-    }
-
     collectPairsFromBoard() {
         console.log('Collect pairs from board and assign to player.')
     }
+
+    playGame() {
+        let userCards = Array.from(document.getElementById('user-container').children);
+
+        userCards.forEach(function(card) {
+            card.addEventListener('click', Game.playTurn)
+        })
+    }
+
+    static playTurn() {
+        Card.moveCardToBoard();
+    };
 };
 
 const game = new Game();

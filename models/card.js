@@ -40,39 +40,55 @@ class Card {
         return cardImg;
     }
 
-    static async addPlayCardEventToUser() {
+    // static addPlayCardEventToUser() {
+    //     let userCards = Array.from(document.getElementById('user-container').children);
+
+    //     userCards.forEach(function(card) {
+    //         card.addEventListener('click', Card.moveCardToBoard)
+    //     })
+    // }
+
+    static moveCardToBoard() {
+        let cardInPlay = document.createElement('img');
+        cardInPlay.setAttribute('src', `${event.target.src}`)
+        cardInPlay.dataset.month = event.target.dataset.month;
+        cardInPlay.dataset.category = event.target.dataset.category;
+
+        let inPlayDiv = document.getElementById('played-container');
+
+        event.target.remove()
+        inPlayDiv.appendChild(cardInPlay)
+
         let userCards = Array.from(document.getElementById('user-container').children);
 
         userCards.forEach(function(card) {
-            card.addEventListener('click', Card.moveCardToBoard)
+            card.removeEventListener('click', Game.playTurn)
         })
     }
 
-    static moveCardToBoard() {
-        game.midTurn = true;
-        const cardId = this.id.split('-')[1];
-        const boardPlayer = game.players.find(x => x.role === 'board');
-        const userPlayer = game.players.find(x => x.role === 'user');
+    // static moveCardToBoard() {
+    //     game.midTurn = true;
+    //     const cardId = this.id.split('-')[1];
+    //     const boardPlayer = game.players.find(x => x.role === 'board');
+    //     const userPlayer = game.players.find(x => x.role === 'user');
 
-        fetch(`http://localhost:3000/cards/${cardId}`, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            body: JSON.stringify({
-                player_id: parseInt(boardPlayer.id)
-            })
-        })
-        .then(function(resp) {
-            Card.loadPlayerCards(boardPlayer);
-            return resp;
-        })
-        .then(function(resp) {
-            Card.loadPlayerCards(userPlayer);
-            return resp;
-        })
-    }
+    //     fetch(`http://localhost:3000/cards/${cardId}`, {
+    //         method: "PATCH",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //             "Accept": "application/json"
+    //         },
+    //         body: JSON.stringify({
+    //             player_id: parseInt(boardPlayer.id)
+    //         })
+    //     })
+    //     .then(function(resp) {
+    //         Card.loadPlayerCards(boardPlayer);
+    //     })
+    //     .then(function(resp) {
+    //         Card.loadPlayerCards(userPlayer);
+    //     })
+    // }
 
     static loadPlayerCards(player) {
         fetch(`http://localhost:3000/players/${player.id}`)
@@ -90,14 +106,14 @@ class Card {
             new Card(card.id, card.category, card.image, card.matched, card.player_id, card.month)
         });
 
-        if (game.midTurn == true && player.data.attributes.role == 'user') {
-            game.playTurn();
-        } else if (player.data.attributes.role == 'board' && game.midTurn == false) {
-            game.collectPairsFromBoard();
-        }
+        // if (game.midTurn == true && player.data.attributes.role == 'user') {
+        //     game.playTurn();
+        // } else if (player.data.attributes.role == 'board' && game.midTurn == false) {
+        //     game.collectPairsFromBoard();
+        // }
     }
 
-    static async dealCards() {
+    static dealCards() {
         fetch(`http://localhost:3000/cards`)
             .then(resp => resp.json())
             .then(function(cards) {
@@ -105,7 +121,7 @@ class Card {
             })
     }
 
-    static async assignCards(cards) {
+    static assignCards(cards) {
         let player_list = {
             user: {
                 count: 8,
@@ -150,6 +166,8 @@ class Card {
         });
         API.loadCards();
     }
+
+
 
 
 };

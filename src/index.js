@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", function(){
-    API.addPlayersAndCards()
+    API.loadPlayers();
+    Card.dealCards();
+    API.createCardSummary()
 
     // Must wait for previous function to finish 
     loadGame()
@@ -39,7 +41,7 @@ function loadGame() {
         .then(newGame => {
           if (!newGame.errors){
             game.name = newGame.data.attributes.name
-            Card.addPlayCardEventToUser();
+            game.playGame();
           } else {
             throw new Error( `${newGame.errors}`)
           }

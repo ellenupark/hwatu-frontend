@@ -5,7 +5,7 @@ class API {
         this.loadCards();
     };
 
-    static async loadCards() {
+    static loadCards() {
         fetch("http://localhost:3000/cards")
         .then(resp => resp.json())
         .then(cards => {
@@ -13,7 +13,7 @@ class API {
         })
     };
 
-    static async loadPlayers() {
+    static loadPlayers() {
         fetch("http://localhost:3000/players")
         .then(resp => resp.json())
         .then(players => {
@@ -33,7 +33,7 @@ class API {
         })
     };
 
-    static async createCardSummary(cards) {
+    static createCardSummary() {
         fetch("http://localhost:3000/cards")
             .then(resp => resp.json())
             .then(cards => {
@@ -85,19 +85,19 @@ class API {
     }
 
     static loadCardsToSummary(card) {
-        const cardMonth = downcaseFirstLetter(card.month);
+        const cardMonth = downcaseFirstLetter(card.attributes.month);
         const parentMonthDiv = document.getElementById(cardMonth);
 
         let cardMonthImg = document.createElement('img');
-        cardMonthImg.setAttribute('src', card.image);
+        cardMonthImg.setAttribute('src', card.attributes.image);
         cardMonthImg.style.maxWidth = "45px";
         parentMonthDiv.appendChild(cardMonthImg)
     
-        const cardCategory = card.category;
+        const cardCategory = card.attributes.category;
         const parentCategoryDiv =  document.getElementsByClassName(cardCategory)[0];
 
         let cardCategoryImg = document.createElement('img');
-        cardCategoryImg.setAttribute('src', card.image);
+        cardCategoryImg.setAttribute('src', card.attributes.image);
         cardCategoryImg.style.maxWidth = "45px";
         parentCategoryDiv.appendChild(cardCategoryImg)
     }
