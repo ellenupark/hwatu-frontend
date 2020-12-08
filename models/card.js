@@ -7,7 +7,6 @@ class Card {
         this.playerId = playerId;
         this.month = month;
         this.renderCard();
-        // this.addToCardSummary()
     };
 
     renderCard() {

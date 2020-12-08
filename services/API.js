@@ -1,8 +1,8 @@
 class API {
-    // move our initial fetch into a function here 
+
     static async addPlayersAndCards(){
-        this.loadCards();
         this.loadPlayers();
+        this.loadCards();
     };
 
     static async loadCards() {
@@ -42,6 +42,16 @@ class API {
                })
             }) 
     };
+
+    static loadUserName() {
+        fetch("http://localhost:3000/games")
+            .then(resp => resp.json())
+            .then(cards => {
+               cards.data.forEach(card => {
+                API.loadCardsToSummary(card);
+               })
+            }) 
+    }
     // static async addPlayersAndCards(){
     //     fetch("http://localhost:3000/players")
     //         .then(resp => resp.json())

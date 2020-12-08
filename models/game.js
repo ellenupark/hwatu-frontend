@@ -5,6 +5,7 @@ class Game {
         this.started = false;
         this.midTurn = false;
         this.deckCount = 22;
+        this.username = "";
     };
 
     set midturn(midturn) {
