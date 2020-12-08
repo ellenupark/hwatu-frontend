@@ -123,6 +123,9 @@ class Game {
     }
 
     static selectCardToPairWith() {
+        const notice = document.getElementById('instruction-display');
+        notice.innerHTML = "";
+        
         let cardsOnBoard = Array.from(document.getElementById('board-container').children);
         let pairs = cardsOnBoard.filter(c => c.classList.contains('highlight'));
 
@@ -161,7 +164,7 @@ class Game {
             })
 
         let randomCardHtml = Card.renderCardHtml(randomCard);
-        
+
         setTimeout(function () {
             boardContainer.appendChild(randomCardHtml);
             return;
