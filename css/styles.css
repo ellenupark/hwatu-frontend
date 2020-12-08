@@ -121,3 +121,8 @@ img {
 .highlight {
     border: 3px solid yellow;
 }
+
+.narrow-width {
+    max-width: 45%;
+    margin: 0 auto;
+}

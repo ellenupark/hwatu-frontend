@@ -9,7 +9,6 @@ class API {
         fetch("http://localhost:3000/cards")
         .then(resp => resp.json())
         .then(cards => {
-            debugger
             API.createCards(cards);
         })
     };
@@ -18,7 +17,6 @@ class API {
         fetch("http://localhost:3000/players")
         .then(resp => resp.json())
         .then(players => {
-            debugger
             API.createPlayers(players);
         }) 
     };
@@ -75,6 +73,7 @@ class API {
             .then(resp => resp.json())
             .then(players => {
                 players.data.forEach(player => {
+                    debugger
                     new Player(player.id, player.attributes.role, player.attributes.username)
                 })
                 players.data.forEach(player => {

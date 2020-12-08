@@ -38,20 +38,20 @@ function loadGame() {
         .then(resp => resp.json())
         .then(newGame => {
           if (!newGame.errors){
-            game.username = newGame.data.attributes.username
-            revealBoard();
+            game.name = newGame.data.attributes.name
             Card.addPlayCardEventToUser();
           } else {
             throw new Error( `${newGame.errors}`)
           }
         })
+        .then(data => revealBoard())
         .catch(alert)
     })  
 }
 
 function getInfo(event){
     return {
-      username: formName.value,
+      name: formName.value,
     }
 }
 
@@ -64,7 +64,7 @@ function createCardList() {
 }
 
 function revealBoard() {
-  document.getElementById('player-pairs').innerText = `${game.username}'s Sets`;
+  document.getElementById('player-pairs').innerText = `${game.name}'s Sets`;
   welcomeDiv.classList.add("hidden")
   mainGameDiv.classList.remove('hidden')
   navBar.classList.remove('hidden')
