@@ -9,6 +9,7 @@ class API {
         fetch("http://localhost:3000/cards")
         .then(resp => resp.json())
         .then(cards => {
+            debugger
             API.createCards(cards);
         })
     };
@@ -17,6 +18,7 @@ class API {
         fetch("http://localhost:3000/players")
         .then(resp => resp.json())
         .then(players => {
+            debugger
             API.createPlayers(players);
         }) 
     };

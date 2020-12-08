@@ -8,7 +8,7 @@ class Game {
         this.username = "";
     };
 
-    set midturn(midturn) {
+    set midTurn(midturn) {
         this.midturn = midturn;
     };
 

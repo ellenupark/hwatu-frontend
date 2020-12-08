@@ -41,9 +41,11 @@ class Card {
     }
 
     static async addPlayCardEventToUser() {
+        debugger
         let userCards = Array.from(document.getElementById('user-container').children);
 
         userCards.forEach(function(card) {
+            debugger
             card.addEventListener('click', Card.moveCardToBoard)
         })
     }

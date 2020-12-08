@@ -1,17 +1,8 @@
 document.addEventListener("DOMContentLoaded", function(){
-    // const game = new Game();
     API.addPlayersAndCards()
+
+    // Must wait for previous function to finish 
     loadGame()
-
-
-
-    
-    // API.addPlayersAndCards()
-    // createCardList()
-    // eventDelegation()
-    // buttonEvent()
-    // clickEvent()
-    // mouseOverEvent()
 })
 
 const gameForm = document.getElementById("form")
@@ -25,7 +16,7 @@ const gameURL = "http://localhost:3000/games"
 function loadGame() {
     // identify the form element
     // add the event listener to the form for the form submit
-    gameForm.addEventListener("submit", function(event){
+    gameForm.addEventListener("submit", function(event) {
         event.preventDefault()
         
         // grab text from each field
@@ -45,12 +36,13 @@ function loadGame() {
         // fetch our results to the back end
         fetch(url, options)
         .then(resp => resp.json())
-        .then(data => {
-          if (!data.errors){
+        .then(newGame => {
+          if (!newGame.errors){
+            game.username = newGame.data.attributes.username
             revealBoard();
             Card.addPlayCardEventToUser();
           } else {
-            throw new Error( `${data.errors}`)
+            throw new Error( `${newGame.errors}`)
           }
         })
         .catch(alert)
@@ -72,10 +64,11 @@ function createCardList() {
 }
 
 function revealBoard() {
+  document.getElementById('player-pairs').innerText = `${game.username}'s Sets`;
   welcomeDiv.classList.add("hidden")
   mainGameDiv.classList.remove('hidden')
   navBar.classList.remove('hidden')
-}
+};
 
 $('#myModal').on('shown.bs.modal', function () {
   $('#myInput').trigger('focus')
