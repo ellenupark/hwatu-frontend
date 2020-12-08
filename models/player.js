@@ -1,8 +1,7 @@
 class Player {
-    constructor(id, role, username) {
+    constructor(id, role) {
         this.id = id;
         this.role = role;
-        this.username = username;
         this.renderPlayer();
         game.add(this)
     };

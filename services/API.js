@@ -23,7 +23,7 @@ class API {
 
     static async createPlayers(players) {
         players.data.forEach(player => {
-            new Player(player.id, player.attributes.role, player.attributes.username)
+            new Player(player.id, player.attributes.role)
         })
     };
 
@@ -73,8 +73,7 @@ class API {
             .then(resp => resp.json())
             .then(players => {
                 players.data.forEach(player => {
-                    debugger
-                    new Player(player.id, player.attributes.role, player.attributes.username)
+                    new Player(player.id, player.attributes.role)
                 })
                 players.data.forEach(player => {
                     player.attributes.cards.forEach(card => {
