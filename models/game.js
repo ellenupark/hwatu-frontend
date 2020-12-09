@@ -149,6 +149,9 @@ class Game {
     };
 
     static selectRandomCardFromDeck(deck) {
+        if (deck.data.attributes.cards === 0) {
+            return;
+        }
         let randomCard = sample(deck.data.attributes.cards);
 
         fetch(`http://localhost:3000/cards/${randomCard.id}`, {
