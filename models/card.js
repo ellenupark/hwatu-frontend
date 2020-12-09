@@ -7,7 +7,7 @@ class Card {
         this.playerId = playerId;
         this.playerRole = playerRole;
         this.month = month;
-        this.renderCard();
+        this.matched === true ? this.renderCardMatchedSets() : this.renderCard();
     };
 
     renderCard() {
@@ -39,7 +39,33 @@ class Card {
         }
         cardContainer.appendChild(cardImg);
     }
-rd
+
+    renderCardMatchedSets() {
+        const cardContainer = document.getElementById(`${game.currentPlayer.role}-pairs`);
+        
+        if (cardContainer.getElementsByClassName(`${this.month}-matched`).length > 0) {
+            let newCard = document.createElement('img')
+            newCard.dataset.month = this.month;
+            newCard.dataset.category = this.category;
+            newCard.id = `card-${this.id}`
+            newCard.classList.add('matched')
+            newCard.setAttribute('src', this.image);
+            cardContainer.getElementsByClassName(`${this.month}-matched`).appendChild(newCard);
+        } else {
+            let newSet = document.createElement('div')
+            newSet.classList.add(`${this.month}-matched`)
+
+            let newCard = document.createElement('img')
+            newCard.dataset.month = this.month;
+            newCard.dataset.category = this.category;
+            newCard.id = `card-${this.id}`
+            newCard.classList.add('matched')
+            newCard.setAttribute('src', this.image);
+
+            newSet.appendChild(newCard);
+        }
+    }
+
     createCardImgHtml() {
         let cardImg = document.createElement('img');
         cardImg.setAttribute('src', this.image);

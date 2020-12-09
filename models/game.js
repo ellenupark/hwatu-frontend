@@ -197,7 +197,7 @@ class Game {
             } else if (cardsFilteredByMonth.length === 2) {
 
                 // Move to current player pairs
-                Game.collectPairsFromBoard();
+                Game.collectPairsFromBoard(cardsFilteredByMonth);
 
             // else if filter card array length is 3 AND array includes card in play
             }
@@ -250,8 +250,32 @@ class Game {
         })
     };
 
-    static collectPairsFromBoard() {
-        console.log('Collect pairs from board and assign to player.')
+    static collectPairsFromBoard(cards) {
+        debugger
+        cards.forEach(c => Game.updateCardDetails(card));
+        return cards;
+    }
+
+    static updateCardDetails(card) {
+        fetch(`http://localhost:3000/cards/${card.id.split('-')[1]}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({
+                player_id: game.board.id,
+                matched: true
+            })
+        })
+        .then(resp => resp.json())
+        .then(function(updatedCard) {
+            setTimeout(function () {
+                card.remove();
+                new Card(updatedCard.data.id, updatedCard.data.attributes.category, updatedCard.data.attributes.image, updatedCard.data.attributes.matched, updatedCard.data.attributes.player.id, updatedCard.data.attributes.player.role, updatedCard.data.attributes.month)
+                return;
+            }, 1000);
+        })
     }
 };
 
