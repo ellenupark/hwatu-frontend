@@ -5,6 +5,9 @@ const computerContainer = document.getElementById('computer-container');
 const userPairs = document.getElementById('user-pairs');
 const computerPairs = document.getElementById('computer-pairs');
 
+const playedCardDiv = document.getElementById('played-container');
+
+
 class Game {
     constructor() {
         this.players = [];
@@ -46,10 +49,6 @@ class Game {
 
     playerCardDiv(roleAsString) {
         return document.getElementById(`${roleAsString}-container`)
-    }
-
-    collectPairsFromBoard() {
-        console.log('Collect pairs from board and assign to player.')
     }
 
     // Add Event Listener to User Cards (begin turn)
@@ -152,6 +151,7 @@ class Game {
         if (deck.data.attributes.cards === 0) {
             return;
         }
+
         let randomCard = sample(deck.data.attributes.cards);
 
         fetch(`http://localhost:3000/cards/${randomCard.id}`, {
@@ -169,8 +169,89 @@ class Game {
 
         setTimeout(function () {
             boardContainer.appendChild(randomCardHtml);
+            Game.checkBoardForPairedSets();
             return;
         }, 1000);
+    }
+
+    static checkBoardForPairedSets() {
+        let cards = Game.retrieveAllCardsInPlay();
+        let playedCard = playedCardDiv.firstElementChild;
+
+        // Iterate through cards O(n)
+        for (let i = 0; i < cards.length; i++) {
+
+            // Select card month
+            let month = cards[i].dataset.month;
+            
+            // Filter cards array by month
+            let cardsFilteredByMonth = cards.filter(c => c.dataset.month === month);
+
+            // If filter cards array length is 1 AND includes card in play
+            if (cardsFilteredByMonth.length === 1 && cardsFilteredByMonth.includes(playedCard)) {
+
+                // Move card in play to board and Update cards player to board
+                Game.movePlayedCardToBoard()
+
+            // else if filter cards array length is 2
+            } else if (cardsFilteredByMonth.length === 2) {
+
+                // Move to current player pairs
+                Game.collectPairsFromBoard();
+
+            // else if filter card array length is 3 AND array includes card in play
+            }
+
+                    // Move card in play to board
+
+                    // Update card player to board
+
+                // else if filter card array length is 4 
+
+                    // Move card to current player pairs
+
+        }
+
+    }
+
+    static retrieveAllCardsInPlay() {
+        let cards = [];
+        let playedCard = playedCardDiv.children[0];
+        let boardCards = boardContainer.children;
+
+        cards.push(playedCard);
+        for (let i = 0; i < boardCards.length; i++) {
+            cards.push(boardCards[i])
+        };
+        return cards;
+    };
+
+    // When played card does not make any pairs
+    static movePlayedCardToBoard() {
+        let playedCard = playedCardDiv.firstElementChild;
+
+        fetch(`http://localhost:3000/cards/${playedCard.id.split('-')[1]}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({
+                player_id: game.board.id
+            })
+        })
+        .then(resp => resp.json())
+        .then(function(card) {
+            setTimeout(function () {
+                playedCard.remove();
+                new Card(card.data.id, card.data.attributes.category, card.data.attributes.image, card.data.attributes.matched, card.data.attributes.player.id, card.data.attributes.player.role, card.data.attributes.month)
+                return;
+            }, 1000);
+        })
+    };
+
+    static collectPairsFromBoard() {
+        console.log('Collect pairs from board and assign to player.')
     }
 };
 

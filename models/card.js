@@ -39,7 +39,7 @@ class Card {
         }
         cardContainer.appendChild(cardImg);
     }
-
+rd
     createCardImgHtml() {
         let cardImg = document.createElement('img');
         cardImg.setAttribute('src', this.image);
@@ -53,6 +53,7 @@ class Card {
         cardInPlay.setAttribute('src', `${event.target.src}`)
         cardInPlay.dataset.month = event.target.dataset.month;
         cardInPlay.dataset.category = event.target.dataset.category;
+        cardInPlay.id = event.target.id;
 
         let inPlayDiv = document.getElementById('played-container');
 
