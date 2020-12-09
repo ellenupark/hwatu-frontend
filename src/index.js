@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function(){
   API.loadPlayers()
   API.createCardSummary()
-  API.loadCards()
+  Card.dealCards()
   loadGame()
 })
 

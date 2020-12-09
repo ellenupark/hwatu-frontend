@@ -84,15 +84,6 @@ class Card {
     }
 
     static async dealCards() {
-        return fetch(`http://localhost:3000/cards`)
-            .then(resp => resp.json())
-            .then(async function(resp) {
-                let cards = await Card.assignCards(resp)
-                return cards;
-            })
-    }
-
-    static async assignCards() {
         let cards = await API.retrieveAllCards()
 
         let player_list = {
@@ -130,16 +121,17 @@ class Card {
                     player_id: player_list[assignedPlayer].id
                 })
             })
+            .then(resp => resp.json())
+            .then(function(card) {
+                new Card(card.data.id, card.data.attributes.category, card.data.attributes.image, card.data.attributes.matched, card.data.attributes.player.id, card.data.attributes.player.role, card.data.attributes.month)
+            })
 
             player_list[assignedPlayer].count -= 1;
 
             if (player_list[assignedPlayer].count == 0) {
                 delete player_list[assignedPlayer]
-            }            
+            }
         });
-
-        cards = await API.retrieveAllCards()
-        return cards;
     }
 
     static renderCardHtml(card) {

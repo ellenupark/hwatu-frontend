@@ -1,13 +1,12 @@
 class API {
 
-    static addPlayersAndCards(){
-        this.loadPlayers()
-        this.loadCards();
-    };
+    // static addPlayersAndCards(){
+    //     this.loadPlayers()
+    //     this.loadCards();
+    // };
 
-    static async loadCards() {
-        let cards = await Card.assignCards();
-        API.createAllCards(cards);
+    static loadCards() {
+        Card.assignCards();
     };
 
     static loadPlayers() {
@@ -25,44 +24,9 @@ class API {
         })
     };
 
-    static createAllCards(cards) {
-        API.renderUserCards(cards)
-        API.renderComputerCards(cards)
-        API.renderBoardCards(cards)
-        API.renderDeckCards(cards)
-    };
-
-    static renderUserCards(cards) {
-        let hand = cards.data.filter(card => card.attributes.player.role === 'user')
-        hand.forEach(function(card) {
-            new Card(card.id, card.attributes.category, card.attributes.image, card.attributes.matched, card.attributes.player.id, card.attributes.player.role, card.attributes.month)
-        })
-    }
-
-    static renderComputerCards(cards) {
-        let hand = cards.data.filter(card => card.attributes.player.role === 'computer')
-        hand.forEach(function(card) {
-            new Card(card.id, card.attributes.category, card.attributes.image, card.attributes.matched, card.attributes.player.id, card.attributes.player.role, card.attributes.month)
-        })
-    }
-
-    static renderBoardCards(cards) {
-        let hand = cards.data.filter(card => card.attributes.player.role === 'board')
-        hand.forEach(function(card) {
-            new Card(card.id, card.attributes.category, card.attributes.image, card.attributes.matched, card.attributes.player.id, card.attributes.player.role, card.attributes.month)
-        })
-    }
-
-    static renderDeckCards(cards) {
-        let hand = cards.data.filter(card => card.attributes.player.role === 'deck')
-        hand.forEach(function(card) {
-            new Card(card.id, card.attributes.category, card.attributes.image, card.attributes.matched, card.attributes.player.id, card.attributes.player.role, card.attributes.month)
-        })
-    }
-
     static async retrieveAllCards() {
-        return fetch("http://localhost:3000/cards")
-        .then(resp => resp.json())
+        const resp = await fetch("http://localhost:3000/cards");
+        return await resp.json();
     }
 
     static createCardSummary() {
