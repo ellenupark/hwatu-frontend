@@ -92,7 +92,9 @@ class Card {
             })
     }
 
-    static assignCards(cards) {
+    static async assignCards() {
+        let cards = await API.retrieveAllCards()
+
         let player_list = {
             user: {
                 count: 8,
@@ -125,7 +127,7 @@ class Card {
                     "Accept": "application/json"
                 },
                 body: JSON.stringify({
-                    player_id: parseInt(player_list[assignedPlayer].id)
+                    player_id: player_list[assignedPlayer].id
                 })
             })
 
@@ -135,6 +137,8 @@ class Card {
                 delete player_list[assignedPlayer]
             }            
         });
+
+        cards = await API.retrieveAllCards()
         return cards;
     }
 

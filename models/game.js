@@ -125,7 +125,7 @@ class Game {
     static selectCardToPairWith() {
         const notice = document.getElementById('instruction-display');
         notice.innerHTML = "";
-        
+
         let cardsOnBoard = Array.from(document.getElementById('board-container').children);
         let pairs = cardsOnBoard.filter(c => c.classList.contains('highlight'));
 
@@ -141,7 +141,6 @@ class Game {
     }
 
     static flipCardFromDeck() {
-        debugger
         fetch(`http://localhost:3000/players/${game.deck.id}`)
         .then(resp => resp.json())
         .then(deck => {
