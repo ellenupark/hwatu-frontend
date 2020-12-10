@@ -47,11 +47,8 @@ class Game {
         }
     }
 
-    playerCardDiv(roleAsString) {
-        return document.getElementById(`${roleAsString}-container`)
-    }
+    // --------- GAME MECHANICS ---------
 
-    // Add Event Listener to User Cards (begin turn)
     playGame() {
         this.turnCount += 1;
         let userCards = userContainer.children;
@@ -67,11 +64,12 @@ class Game {
 
     static playTurn() {
         Game.moveCardToBoard();
-        Game.highlightBoardPairs();
+        Game.highlightMatchingCardMonths();
     };
 
+    // --------- USER ---------
+
     static moveCardToBoard() {
-        debugger
         let playedCard = event.target;
         let userCards = userContainer.children;
 
@@ -85,53 +83,35 @@ class Game {
         }
     }
 
-    static highlightBoardPairs() {
-        let pairsArray = [];
+    static highlightMatchingCardMonths() {
+        const playedCard = playedCardDiv.firstChild;
+        const playedCardMonth = playedCard.dataset.month;
 
-        let playedCard = document.getElementById('played-container').children[0];
-        let playedCardMonth = playedCard.dataset.month;
-
-        let cardsOnBoard = Array.from(document.getElementById('board-container').children);
-
-        let pairs = cardsOnBoard.filter(c => c.dataset.month == playedCardMonth) 
+        let cardsOnBoard = Array.from(boardContainer.children);
+        let matchedCards = cardsOnBoard.filter(card => card.dataset.month === playedCardMonth);
         
-        switch (pairs.length) {
+        switch (matchedCards.count) {
             case 0:
                 Game.flipCardFromDeck();
                 break;
             case 1:
-                pairs[0].classList.add('highlight')
-                pairs[0].classList.add('set')
+                matchedCards[0].classList.add('highlight', 'set')
                 Game.flipCardFromDeck();
                 break;
             case 2:
-                if (game.currentPlayer.role == 'user') {
-                    pairs.forEach(function(card) {
-                        card.classList.add('highlight');
-                    });
-                    // Allow User to pick which card to pair with
+                if (game.currentPlayer.role === 'user') {
+                    matchedCards.forEach(card => card.classList.add('highlight'));
                     Game.displayPickCardInstructions();
                     Game.pickCardToPair();
                     break;
                 } else {
-                    pairs.forEach(function(card) {
-                        if (card.dataset.category !== 'junk') {
-                            card.classList.add('highlight');
-                            card.classList.add('set')
-                            Game.flipCardFromDeck();
-                        } else if (card.dataset.category == 'junk' && card == pairs[pairs.length - 1]) {
-                            card.classList.add('highlight');
-                            card.classList.add('set')
-                            Game.flipCardFromDeck();
-                        }
-                    });
+                    let matchedCard = sample(matchedCards);
+                    matchedCard.classList.add('highlight', 'set');
+                    Game.flipCardFromDeck();
                     break;
                 }
             case 3:
-                pairs.forEach(function(card) {
-                    card.classList.add('highlight');
-                    card.classList.add('set');
-                });
+                matchedCards.forEach(card => card.classList.add('highlight', 'set'));
                 Game.flipCardFromDeck();
                 break;
         };
@@ -381,7 +361,7 @@ class Game {
         setTimeout(function () {
             card.remove();
             inPlayDiv.appendChild(playedCard)
-            Game.highlightBoardPairs();
+            Game.highlightMatchingCardMonths();
             return;
         }, 1000);
     }
