@@ -85,7 +85,7 @@ class API {
     }
 
     static async updateCardPlayerToBoard(card) {
-        return fetch(`http://localhost:3000/cards/${card.id}`, {
+        return fetch(`http://localhost:3000/cards/${card.data.id}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -96,9 +96,10 @@ class API {
             })
         })
         .then(resp => resp.json())
-        .then(function(resp) {
-            debugger
-            return resp;
-        })
+    }
+
+    static async fetchRandomCardFromDeck() {
+        return fetch(`http://localhost:3000/players/${game.deck.id}/cards`)
+        .then(resp => resp.json())
     }
 }

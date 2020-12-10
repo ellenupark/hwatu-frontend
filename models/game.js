@@ -4,6 +4,7 @@ const userContainer = document.getElementById('user-container');
 const computerContainer = document.getElementById('computer-container');
 const userPairs = document.getElementById('user-pairs');
 const computerPairs = document.getElementById('computer-pairs');
+let next = false;
 
 const playedCardDiv = document.getElementById('played-container');
 
@@ -57,27 +58,101 @@ class Game {
             Game.flipCardFromDeck();
         } else {
             for (let i = 0; i < userCards.length; i++) {
-                userCards[i].addEventListener('click', Game.playTurn)
+                userCards[i].addEventListener('click', () => {
+                    Game.playTurn()
+                    .then()
+                })
             }
         }
     }
+    
+    // EDITED
 
-    static playTurn() {
-        Game.moveCardToBoard();
-        Game.highlightMatchingCardMonths();
+    static async playTurn() {
+        const playedCard = await Game.moveCardToBoard();
+        const boardPairs = await Game.findBoardPairs()
+
+        let flippedCard;
+        switch (boardPairs.length) {
+            case 0:
+                flippedCard = await Game.flipCardFromDeck();
+                break;
+            case 1:
+                boardPairs[0].classList.add('highlight', 'set')
+                flippedCard = await Game.flipCardFromDeck();
+                break;
+            case 2:
+                if (game.currentPlayer.role === 'user') {
+                    boardPairs.forEach(card => card.classList.add('highlight'));
+                    let instructions = await Game.displayPickCardInstructions();
+                    let finalPickedCard = await Game.pickCardToPair();
+                    
+                    let canContinue = await Game.awaitUserInput()
+                    
+                    flippedCard = await Game.flipCardFromDeck();
+                    
+                    break;
+                } else {
+                    let boardPairs = sample(boardPairs);
+                    boardPairs.classList.add('highlight', 'set');
+                    flippedCard = await Game.flipCardFromDeck();
+                    break;
+                }
+            case 3:
+                boardPairs.forEach(card => card.classList.add('highlight', 'set'));
+                flippedCard = await Game.flipCardFromDeck();
+                break;
+        };
+
+        
+        const finalPairsOnBoard = await Game.checkBoardForPairedSets()
+        
+        const finalSets = await Game.findSets(finalPairsOnBoard)
+        
+
+        if (game.currentPlayer.role === 'user') {
+            
+            Game.playComputerTurn()
+        } else {
+            
+            game.playGame();
+        }
+
+
+        
     };
+
+    static async findBoardPairs() {
+        const playedCard = playedCardDiv.firstElementChild;
+        const playedCardMonth = playedCard.dataset.month;
+
+        let cardsOnBoard = Array.from(boardContainer.children);
+        let matchedCards = cardsOnBoard.filter(card => card.dataset.month === playedCardMonth);
+
+        return matchedCards
+    }
+
+    // END EDITED
+
+    // UNTOUCHED
+    // static async playTurn() {
+    //     const playedCard = await Game.moveCardToBoard();
+    //     
+    //     Game.highlightMatchingCardMonths();
+    // };
+
+
 
     // --------- USER ---------
 
-    static moveCardToBoard() {
+    static async moveCardToBoard() {
         let playedCard = event.target;
-        let userCards = userContainer.children;
-
         let playedCardHtml = Card.renderCardHtml(playedCard);
-        let inPlayDiv = document.getElementById('played-container');
+        
         playedCard.remove();
         playedCardDiv.appendChild(playedCardHtml);
 
+        let userCards = userContainer.children;
         for (let i = 0; i < userCards.length; i++) {
             userCards[i].removeEventListener('click', Game.playTurn)
         }
@@ -85,25 +160,44 @@ class Game {
         return playedCardHtml;
     }
 
-    static displayPickCardInstructions() {
+    static async displayPickCardInstructions() {
         const notice = document.getElementById('instruction-display');
         notice.innerHTML += `
         <div class="rule-notice">
             <p>Select Card to Pair With!</p>
         </div>
         `
+        return notice
     }
 
-    static pickCardToPair() {
-        let cardsOnBoard = Array.from(document.getElementById('board-container').children);
+    
+    static async awaitUserInput() {
+        const timeout = async ms => new Promise(res => setTimeout(res, ms));
+
+        while (next === false) await timeout(50); // pauses script
+        next = false; // reset var
+    }
+
+    static async pickCardToPair() {
+        let cardsOnBoard = Array.from(boardContainer.children);
         let pairs = cardsOnBoard.filter(c => c.classList.contains('highlight'));
         
         pairs.forEach(function(card) {
-            card.addEventListener('click', Game.selectCardToPairWith)
+            card.addEventListener('click', () => {
+                Game.selectCardToPairWith()
+                .then(function(resp) {
+                    
+                    return resp;
+                })
+                .then(resp => next = true)
+            })
         })
+
+        return pairs;
     }
 
-    static selectCardToPairWith() {
+    static async selectCardToPairWith() {
+        const selectedCard = event.target
         const notice = document.getElementById('instruction-display');
         notice.innerHTML = "";
 
@@ -111,18 +205,22 @@ class Game {
         let pairs = cardsOnBoard.filter(c => c.classList.contains('highlight'));
 
         pairs.forEach(function(card) {
-            if (card !== event.target) {
+            if (card !== selectedCard) {
                 card.classList.remove('highlight');
             }
         })
 
-        Game.flipCardFromDeck();
-        event.target.classList.add('set')
-        event.target.removeEventListener('click', Game.selectCardToPairWith)
+        selectedCard.classList.add('set')
+        selectedCard.removeEventListener('click', Game.selectCardToPairWith)
+
+        
+        return selectedCard;
     }
 
     // GAME MECHANICS
+    
 
+    // EDITED
     static highlightMatchingCardMonths() {
         const playedCard = playedCardDiv.firstElementChild;
         const playedCardMonth = playedCard.dataset.month;
@@ -130,122 +228,258 @@ class Game {
         let cardsOnBoard = Array.from(boardContainer.children);
         let matchedCards = cardsOnBoard.filter(card => card.dataset.month === playedCardMonth);
         
-        switch (matchedCards.length) {
-            case 0:
-                Game.flipCardFromDeck();
-                break;
-            case 1:
-                matchedCards[0].classList.add('highlight', 'set')
-                Game.flipCardFromDeck();
-                break;
-            case 2:
-                if (game.currentPlayer.role === 'user') {
-                    matchedCards.forEach(card => card.classList.add('highlight'));
-                    Game.displayPickCardInstructions();
-                    Game.pickCardToPair();
-                    break;
-                } else {
-                    let matchedCard = sample(matchedCards);
-                    matchedCard.classList.add('highlight', 'set');
-                    Game.flipCardFromDeck();
-                    break;
-                }
-            case 3:
-                matchedCards.forEach(card => card.classList.add('highlight', 'set'));
-                Game.flipCardFromDeck();
-                break;
-        };
+        return matchedCards;
     }
+    
+    // UNTOUCHED
+    // static highlightMatchingCardMonths() {
+    //     const playedCard = playedCardDiv.firstElementChild;
+    //     const playedCardMonth = playedCard.dataset.month;
 
-    static flipCardFromDeck() {
-        fetch(`http://localhost:3000/players/${game.deck.id}/cards`)
-        .then(resp => resp.json())
-        .then(function(card) {
-            debugger
-        })
-        .then(card => Game.checkBoardForPairedSets())
-    };
+    //     let cardsOnBoard = Array.from(boardContainer.children);
+    //     let matchedCards = cardsOnBoard.filter(card => card.dataset.month === playedCardMonth);
+        
+    //     switch (matchedCards.length) {
+    //         case 0:
+    //             Game.flipCardFromDeck();
+    //             break;
+    //         case 1:
+    //             matchedCards[0].classList.add('highlight', 'set')
+    //             Game.flipCardFromDeck();
+    //             break;
+    //         case 2:
+    //             if (game.currentPlayer.role === 'user') {
+    //                 matchedCards.forEach(card => card.classList.add('highlight'));
+    //                 Game.displayPickCardInstructions();
+    //                 Game.pickCardToPair();
+    //                 break;
+    //             } else {
+    //                 let matchedCard = sample(matchedCards);
+    //                 matchedCard.classList.add('highlight', 'set');
+    //                 Game.flipCardFromDeck();
+    //                 break;
+    //             }
+    //         case 3:
+    //             matchedCards.forEach(card => card.classList.add('highlight', 'set'));
+    //             Game.flipCardFromDeck();
+    //             break;
+    //     };
+    // }
 
-    static selectRandomCardFromDeck(deck) {
 
-        // TO REVIEW
-        if (deck.data.attributes.cards.length === 0) {
+    // EDITED
+
+    
+    static async flipCardFromDeck() {
+        if (game.turnCount === 22) {
             return;
         }
 
-        let randomCard = sample(deck.data.attributes.cards);
-    
-        API.updateCardPlayerToBoard(randomCard)
-        .then(card => Card.renderCardHtmlFromDatabase(card))
-        .then(function(resp) {
-            debugger
-        })
+        const topCardOfDeck = await API.fetchRandomCardFromDeck();
+        
+        const flippedCard = await API.updateCardPlayerToBoard(topCardOfDeck);
 
-    
+        
 
-        let randomCardHtml = Card.renderCardHtmlFromDatabase(randomCard);
+        const renderFlippedCard = new Card(flippedCard.data.id, flippedCard.data.attributes.category, flippedCard.data.attributes.image, flippedCard.data.attributes.matched, flippedCard.data.attributes.player.id, flippedCard.data.attributes.player.role, flippedCard.data.attributes.month)
 
-        // Wait 1 second before flipping top card from deck
-        let result = setTimeout(function () {
-            boardContainer.appendChild(randomCardHtml);
-            return randomCard;
-            // Game.checkBoardForPairedSets();
-            // setTimeout(function () {
-            //     if (game.currentPlayer.role === 'user') {
-                    
-            //         Game.playComputerTurn()
-            //     } else {
-                    
-            //         game.playGame()
-            //     }
-            // }, 3000);
-        }, 1000);
+        
+        return renderFlippedCard;
+    };
 
-        return result;
-    }
 
-    static checkBoardForPairedSets() {
-        let cards = Game.retrieveAllCardsInPlay();
+    // EDITED END
+
+
+    // UNTOUCHED
+    // static flipCardFromDeck() {
+    //     if (game.turnCount === 22) {
+    //         return;
+    //     }
+    //     fetch(`http://localhost:3000/players/${game.deck.id}/cards`)
+    //     .then(resp => resp.json())
+    //     .then(card => API.updateCardPlayerToBoard(card))
+    //     .then(function(card) {
+    //         let promise = new Promise(function(resolve, reject) {
+    //             setTimeout(() => resolve(new Card(card.data.id, card.data.attributes.category, card.data.attributes.image, card.data.attributes.matched, card.data.attributes.player.id, card.data.attributes.player.role, card.data.attributes.month)), 1000);
+    //         });
+    //         return promise;
+    //     })
+    //     .then(function(card) {
+    //         Game.checkBoardForPairedSets()
+    //         setTimeout(function() {
+    //             if (game.currentPlayer.role === 'user') {
+    //                 Game.playComputerTurn()
+    //             } else {
+    //                 game.playGame();
+    //             }
+    //         }, 3000)
+    //     })
+    // };
+
+
+    // EDITED
+
+    static async checkBoardForPairedSets() {
         let playedCard = playedCardDiv.firstElementChild;
+        let cards = Game.retrieveAllCardsInPlay();
 
         let pairs = {}
 
-        // Iterate through cards O(n)
         for (let i = 0; i < cards.length; i++) {
             pairs[cards[i].dataset.month] ||= [];
             pairs[cards[i].dataset.month].push(cards[i])
         }
 
-        Object.keys(pairs).forEach(function(month) {
+       return pairs;
+    }
+
+
+
+
+
+    // EDITED END
+
+
+
+
+    // UNEDITED
+    // static checkBoardForPairedSets() {
+    //     let playedCard = playedCardDiv.firstElementChild;
+    //     let cards = Game.retrieveAllCardsInPlay();
+
+    //     let pairs = {}
+
+    //     for (let i = 0; i < cards.length; i++) {
+    //         pairs[cards[i].dataset.month] ||= [];
+    //         pairs[cards[i].dataset.month].push(cards[i])
+    //     }
+
+    //     Game.findSets(pairs)
+    // }
+
+
+
+
+    // EDITED
+    static async findSets(pairs) {
+        let playedCard = playedCardDiv.firstElementChild;
+        const months = Object.keys(pairs);
+
+        
+
+        await asyncForEach(months, async (month) => {
             if (pairs[month].length === 1 && pairs[month].includes(playedCard)) {
                 
-                Game.movePlayedCardToBoard();
+                let playedCardMovedToBoard = await Game.movePlayedCardToBoard();
             } else if (pairs[month].length === 2) {
                 if (pairs[month].includes(playedCard) || pairs[month].includes(boardContainer.lastElementChild)) {
+                    pairs[month].forEach(c => c.classList.remove('highlight'));
                     
-                    pairs[month].forEach(c => c.classList.remove('highlight'))
-                    Game.collectPairsFromBoard(pairs[month])
+                    let collectedCards = await Game.collectPairsFromBoard(pairs[month]);
                 }
             } else if (pairs[month].length === 3 && pairs[month].includes(playedCard)) {
                 if (boardContainer.lastElementChild.dataset.month == playedCard.dataset.month) {
-                    
-                    pairs[month].forEach(c => c.classList.remove('highlight'))
-                    Game.movePlayedCardToBoard();
+                    pairs[month].forEach(c => c.classList.remove('highlight'));
+                    let playedCardMovedToBoard = await Game.movePlayedCardToBoard();
                 } else {
-                    let chosenPair = pairs[month].filter(c => c.classList.contains('set') || c == playedCard)
-                    chosenPair.forEach(c => c.classList.remove('highlight'))
-                    Game.collectPairsFromBoard(chosenPair)
+                    let chosenPair = pairs[month].filter(c => c.classList.contains('set') || c == playedCard);
+                    chosenPair.forEach(c => c.classList.remove('highlight'));
+                    
+                    let collectedCards = await Game.collectPairsFromBoard(chosenPair);
                 }
             } else if (pairs[month].length === 4) {
                 if (pairs[month].includes(playedCard) || pairs[month].includes(boardContainer.lastElementChild)) {
-                    pairs[month].forEach(c => c.classList.remove('highlight'))
-                    Game.collectPairsFromBoard(pairs[month])
+                    pairs[month].forEach(c => c.classList.remove('highlight'));
+                    
+                    let collectedCards = await Game.collectPairsFromBoard(pairs[month]);
                 }
             }
+
         })
 
         return pairs;
     }
+
+
+
+
+    // END EDITED
+
+
+
+
+    // UNEDITED
+    // static findSets(pairs) {
+    //     let playedCard = playedCardDiv.firstElementChild;
+    //     let result = Object.keys(pairs).map(async function (month) {
+    //         if (pairs[month].length === 1 && pairs[month].includes(playedCard)) {
+    //             return await Game.movePlayedCardToBoard();
+    //         } else if (pairs[month].length === 2) {
+    //             if (pairs[month].includes(playedCard) || pairs[month].includes(boardContainer.lastElementChild)) {
+    //                 pairs[month].forEach(c => c.classList.remove('highlight'));
+    //                 Game.collectPairsFromBoard(pairs[month]);
+    //             }
+    //         } else if (pairs[month].length === 3 && pairs[month].includes(playedCard)) {
+    //             if (boardContainer.lastElementChild.dataset.month == playedCard.dataset.month) {
+    //                 pairs[month].forEach(c => c.classList.remove('highlight'));
+    //                 Game.movePlayedCardToBoard();
+    //             } else {
+    //                 let chosenPair = pairs[month].filter(c => c.classList.contains('set') || c == playedCard);
+    //                 chosenPair.forEach(c => c.classList.remove('highlight'));
+    //                 Game.collectPairsFromBoard(chosenPair);
+    //             }
+    //         } else if (pairs[month].length === 4) {
+    //             if (pairs[month].includes(playedCard) || pairs[month].includes(boardContainer.lastElementChild)) {
+    //                 pairs[month].forEach(c => c.classList.remove('highlight'));
+    //                 Game.collectPairsFromBoard(pairs[month]);
+    //             }
+    //         }
+    //     })
+    //     return result;
+    // }
+
+
+    // static checkBoardForPairedSets() {
+    //     let cards = Game.retrieveAllCardsInPlay();
+    //     let pairs = {}
+
+    //     for (let i = 0; i < cards.length; i++) {
+    //         pairs[cards[i].dataset.month] ||= [];
+    //         pairs[cards[i].dataset.month].push(cards[i])
+    //     }
+    //     return Game.findSets(pairs)
+    // }
+
+    // static findSets(pairs) {
+    //     let playedCard = playedCardDiv.firstElementChild;
+    //     let result =  Object.keys(pairs).map(function (month) {
+    //         if (pairs[month].length === 1 && pairs[month].includes(playedCard)) {
+    //             Game.movePlayedCardToBoard();
+    //         } else if (pairs[month].length === 2) {
+    //             if (pairs[month].includes(playedCard) || pairs[month].includes(boardContainer.lastElementChild)) {
+    //                 pairs[month].forEach(c => c.classList.remove('highlight'));
+    //                 Game.collectPairsFromBoard(pairs[month]);
+    //             }
+    //         } else if (pairs[month].length === 3 && pairs[month].includes(playedCard)) {
+    //             if (boardContainer.lastElementChild.dataset.month == playedCard.dataset.month) {
+    //                 pairs[month].forEach(c => c.classList.remove('highlight'));
+    //                 Game.movePlayedCardToBoard();
+    //             } else {
+    //                 let chosenPair = pairs[month].filter(c => c.classList.contains('set') || c == playedCard);
+    //                 chosenPair.forEach(c => c.classList.remove('highlight'));
+    //                 Game.collectPairsFromBoard(chosenPair);
+    //             }
+    //         } else if (pairs[month].length === 4) {
+    //             if (pairs[month].includes(playedCard) || pairs[month].includes(boardContainer.lastElementChild)) {
+    //                 pairs[month].forEach(c => c.classList.remove('highlight'));
+    //                 Game.collectPairsFromBoard(pairs[month]);
+    //             }
+    //         }
+    //     })
+
+    //     return result;
+    // }
 
     static retrieveAllCardsInPlay() {
         let cards = [];
@@ -260,10 +494,10 @@ class Game {
     };
 
     // When played card does not make any pairs
-    static movePlayedCardToBoard() {
+    static async movePlayedCardToBoard() {
         let playedCard = playedCardDiv.firstElementChild;
 
-        fetch(`http://localhost:3000/cards/${playedCard.id.split('-')[1]}`, {
+        return fetch(`http://localhost:3000/cards/${playedCard.id.split('-')[1]}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -275,23 +509,25 @@ class Game {
         })
         .then(resp => resp.json())
         .then(function(card) {
-            
-            setTimeout(function () {
-                playedCard.remove();
-                new Card(card.data.id, card.data.attributes.category, card.data.attributes.image, card.data.attributes.matched, card.data.attributes.player.id, card.data.attributes.player.role, card.data.attributes.month)
-                return;
-            }, 1000);
+            playedCard.remove();
+            new Card(card.data.id, card.data.attributes.category, card.data.attributes.image, card.data.attributes.matched, card.data.attributes.player.id, card.data.attributes.player.role, card.data.attributes.month)
+            return card
         })
     };
 
-    static collectPairsFromBoard(cards) {
-        cards.forEach(card => Game.updateCardDetails(card));
-        return cards;
+    static async collectPairsFromBoard(cards) {
+        let updatedCards = []
+
+        await asyncForEach(cards, async (card) => {
+            let updatedCard = await Game.updateCardDetails(card);
+            updatedCards.push(updatedCard);
+        })
+        
+        return updatedCards;
     }
 
-    static updateCardDetails(card) {
-        
-        fetch(`http://localhost:3000/cards/${card.id.split('-')[1]}`, {
+    static async updateCardDetails(card) {
+        return fetch(`http://localhost:3000/cards/${card.id.split('-')[1]}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -303,16 +539,19 @@ class Game {
             })
         })
         .then(resp => resp.json())
-        .then(function(updatedCard) {
-            setTimeout(function () {
-                card.remove();
-                new Card(updatedCard.data.id, updatedCard.data.attributes.category, updatedCard.data.attributes.image, updatedCard.data.attributes.matched, updatedCard.data.attributes.player.id, updatedCard.data.attributes.player.role, updatedCard.data.attributes.month)
-                return;
-            }, 1000);
-        })
+        .then(updatedCard => Game.displayCardInPairsDiv(card, updatedCard))
+    }
+
+    static async displayCardInPairsDiv(oldCard, newCard) {
+        // await timeout(1000);
+        oldCard.remove()
+        new Card(newCard.data.id, newCard.data.attributes.category, newCard.data.attributes.image, newCard.data.attributes.matched, newCard.data.attributes.player.id, newCard.data.attributes.player.role, newCard.data.attributes.month)
+        
+        return newCard;
     }
 
     static playComputerTurn() {
+        
         game.turnCount += 1;
 
         if (boardContainer.childElementCount === 0 && deckContainer.childElementCount === 0 && userContainer.childElementCount === 0 && computerContainer.childElementCount === 0) {
@@ -330,7 +569,6 @@ class Game {
         }
 
         let pairs = {}
-
         for (let i = 0; i < cards.length; i++) {
             pairs[cards[i].dataset.month] ||= [];
             pairs[cards[i].dataset.month].push(cards[i])
@@ -338,17 +576,12 @@ class Game {
 
         for (let i = 0; i < myCards.length; i ++) {
             if (Object.keys(pairs).includes(myCards[i].dataset.month) && pairs[myCards[i].dataset.month].length === 3) {
-                // Play Card
-                
                 Game.playComputerCard(myCards[i]);
                 break;
             } else if (Object.keys(pairs).includes(myCards[i].dataset.month) && pairs[myCards[i].dataset.month].length === 2) {
-                
                 Game.playComputerCard(myCards[i]);
                 break;
             } else if (myCards[i] == myCards[myCards.length - 1] && playedCardDiv.childElementCount === 0) {
-                // Play Random Card
-                
                 Game.playComputerCard(myCards[i])
                 break;
             }
@@ -374,13 +607,22 @@ class Game {
     }
 
     static calculateWinner() {
-        debugger
+        
     }
 };
 
 const game = new Game();
 
-// Select random element from array
 function sample(array) {
     return array[Math.floor ( Math.random() * array.length )]
+}
+
+function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+      await callback(array[index], index, array);
+    }
 }

@@ -147,7 +147,6 @@ class Card {
     }
 
     static renderCardHtmlFromDatabase(card) {
-        debugger
         let newCard = document.createElement('img');
         newCard.dataset.month = card.data.attributes.month;        ;
         newCard.dataset.category = card.data.attributes.category;
