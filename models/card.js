@@ -25,15 +25,14 @@ class Card {
             case 'computer':
                 cardImg.dataset.month = this.month;
                 cardImg.dataset.category = this.category;
+                cardImg.dataset.url = this.image;
                 cardImg.id = `card-${this.id}`
-                cardImg.classList.add(`${this.playerRole}-test`)
                 cardImg.setAttribute('src', 'https://i.ibb.co/QJ2J9d2/cardback.png')
                 break;
             default:
                 cardImg.dataset.month = this.month;
                 cardImg.dataset.category = this.category;
                 cardImg.id = `card-${this.id}`
-                cardImg.classList.add(`${this.playerRole}-test`)
                 cardImg.setAttribute('src', this.image);
                 break;
         }
@@ -43,17 +42,21 @@ class Card {
     renderCardMatchedSets() {
         const cardContainer = document.getElementById(`${game.currentPlayer.role}-pairs`);
         
+
         if (cardContainer.getElementsByClassName(`${this.month}-matched`).length > 0) {
             let newCard = document.createElement('img')
             newCard.dataset.month = this.month;
             newCard.dataset.category = this.category;
             newCard.id = `card-${this.id}`
-            newCard.classList.add('matched')
             newCard.setAttribute('src', this.image);
-            cardContainer.getElementsByClassName(`${this.month}-matched`).appendChild(newCard);
+            
+            document.getElementsByClassName(`${this.month}-matched`)[0].appendChild(newCard);
         } else {
             let newSet = document.createElement('div')
             newSet.classList.add(`${this.month}-matched`)
+            newSet.classList.add('matched');
+
+            cardContainer.appendChild(newSet);
 
             let newCard = document.createElement('img')
             newCard.dataset.month = this.month;
@@ -61,6 +64,7 @@ class Card {
             newCard.id = `card-${this.id}`
             newCard.classList.add('matched')
             newCard.setAttribute('src', this.image);
+            
 
             newSet.appendChild(newCard);
         }
@@ -71,26 +75,6 @@ class Card {
         cardImg.setAttribute('src', this.image);
         cardImg.style.maxWidth = "45px";
         return cardImg;
-    }
-
-    // Move played card to board and remove event listener from User cards
-    static moveCardToBoard() {
-        let cardInPlay = document.createElement('img');
-        cardInPlay.setAttribute('src', `${event.target.src}`)
-        cardInPlay.dataset.month = event.target.dataset.month;
-        cardInPlay.dataset.category = event.target.dataset.category;
-        cardInPlay.id = event.target.id;
-
-        let inPlayDiv = document.getElementById('played-container');
-
-        event.target.remove()
-        inPlayDiv.appendChild(cardInPlay)
-
-        let userCards = Array.from(document.getElementById('user-container').children);
-
-        userCards.forEach(function(card) {
-            card.removeEventListener('click', Game.playTurn)
-        })
     }
 
     static loadPlayerCards(player) {
@@ -145,7 +129,8 @@ class Card {
                     "Accept": "application/json"
                 },
                 body: JSON.stringify({
-                    player_id: player_list[assignedPlayer].id
+                    player_id: player_list[assignedPlayer].id,
+                    matched: false
                 })
             })
             .then(resp => resp.json())
@@ -161,12 +146,21 @@ class Card {
         });
     }
 
-    static renderCardHtml(card) {
+    static renderCardHtmlFromDatabase(card) {
         let newCard = document.createElement('img');
         newCard.dataset.month = card.month;
         newCard.dataset.category = card.category;
         newCard.id = `card-${card.id}`
         newCard.setAttribute('src', card.image);
+        return newCard;
+    }
+
+    static renderCardHtml(card) {
+        let newCard = document.createElement('img');
+        newCard.dataset.month = card.dataset.month;
+        newCard.dataset.category = card.dataset.category;
+        newCard.id = card.id;
+        newCard.setAttribute('src', card.src);
         return newCard;
     }
 };
