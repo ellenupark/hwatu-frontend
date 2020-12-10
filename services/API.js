@@ -83,4 +83,22 @@ class API {
         cardCategoryImg.style.maxWidth = "45px";
         parentCategoryDiv.appendChild(cardCategoryImg)
     }
+
+    static async updateCardPlayerToBoard(card) {
+        return fetch(`http://localhost:3000/cards/${card.id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({
+                player_id: game.board.id
+            })
+        })
+        .then(resp => resp.json())
+        .then(function(resp) {
+            debugger
+            return resp;
+        })
+    }
 }

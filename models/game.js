@@ -81,41 +81,8 @@ class Game {
         for (let i = 0; i < userCards.length; i++) {
             userCards[i].removeEventListener('click', Game.playTurn)
         }
-    }
 
-    static highlightMatchingCardMonths() {
-        const playedCard = playedCardDiv.firstChild;
-        const playedCardMonth = playedCard.dataset.month;
-
-        let cardsOnBoard = Array.from(boardContainer.children);
-        let matchedCards = cardsOnBoard.filter(card => card.dataset.month === playedCardMonth);
-        
-        switch (matchedCards.count) {
-            case 0:
-                Game.flipCardFromDeck();
-                break;
-            case 1:
-                matchedCards[0].classList.add('highlight', 'set')
-                Game.flipCardFromDeck();
-                break;
-            case 2:
-                if (game.currentPlayer.role === 'user') {
-                    matchedCards.forEach(card => card.classList.add('highlight'));
-                    Game.displayPickCardInstructions();
-                    Game.pickCardToPair();
-                    break;
-                } else {
-                    let matchedCard = sample(matchedCards);
-                    matchedCard.classList.add('highlight', 'set');
-                    Game.flipCardFromDeck();
-                    break;
-                }
-            case 3:
-                matchedCards.forEach(card => card.classList.add('highlight', 'set'));
-                Game.flipCardFromDeck();
-                break;
-        };
-
+        return playedCardHtml;
     }
 
     static displayPickCardInstructions() {
@@ -154,48 +121,87 @@ class Game {
         event.target.removeEventListener('click', Game.selectCardToPairWith)
     }
 
+    // GAME MECHANICS
+
+    static highlightMatchingCardMonths() {
+        const playedCard = playedCardDiv.firstElementChild;
+        const playedCardMonth = playedCard.dataset.month;
+
+        let cardsOnBoard = Array.from(boardContainer.children);
+        let matchedCards = cardsOnBoard.filter(card => card.dataset.month === playedCardMonth);
+        
+        switch (matchedCards.length) {
+            case 0:
+                Game.flipCardFromDeck();
+                break;
+            case 1:
+                matchedCards[0].classList.add('highlight', 'set')
+                Game.flipCardFromDeck();
+                break;
+            case 2:
+                if (game.currentPlayer.role === 'user') {
+                    matchedCards.forEach(card => card.classList.add('highlight'));
+                    Game.displayPickCardInstructions();
+                    Game.pickCardToPair();
+                    break;
+                } else {
+                    let matchedCard = sample(matchedCards);
+                    matchedCard.classList.add('highlight', 'set');
+                    Game.flipCardFromDeck();
+                    break;
+                }
+            case 3:
+                matchedCards.forEach(card => card.classList.add('highlight', 'set'));
+                Game.flipCardFromDeck();
+                break;
+        };
+    }
+
     static flipCardFromDeck() {
-        fetch(`http://localhost:3000/players/${game.deck.id}`)
+        fetch(`http://localhost:3000/players/${game.deck.id}/cards`)
         .then(resp => resp.json())
-        .then(deck => {
-            Game.selectRandomCardFromDeck(deck);
-        });
+        .then(function(card) {
+            debugger
+        })
+        .then(card => Game.checkBoardForPairedSets())
     };
 
     static selectRandomCardFromDeck(deck) {
-        if (deck.data.attributes.cards === 0) {
+
+        // TO REVIEW
+        if (deck.data.attributes.cards.length === 0) {
             return;
         }
 
         let randomCard = sample(deck.data.attributes.cards);
+    
+        API.updateCardPlayerToBoard(randomCard)
+        .then(card => Card.renderCardHtmlFromDatabase(card))
+        .then(function(resp) {
+            debugger
+        })
 
-        fetch(`http://localhost:3000/cards/${randomCard.id}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"
-                },
-                body: JSON.stringify({
-                    player_id: game.board.id
-                })
-            })
+    
 
         let randomCardHtml = Card.renderCardHtmlFromDatabase(randomCard);
 
-        setTimeout(function () {
+        // Wait 1 second before flipping top card from deck
+        let result = setTimeout(function () {
             boardContainer.appendChild(randomCardHtml);
-            Game.checkBoardForPairedSets();
-            setTimeout(function () {
-                if (game.currentPlayer.role === 'user') {
+            return randomCard;
+            // Game.checkBoardForPairedSets();
+            // setTimeout(function () {
+            //     if (game.currentPlayer.role === 'user') {
                     
-                    Game.playComputerTurn()
-                } else {
+            //         Game.playComputerTurn()
+            //     } else {
                     
-                    game.playGame()
-                }
-            }, 3000);
-            return;
+            //         game.playGame()
+            //     }
+            // }, 3000);
         }, 1000);
+
+        return result;
     }
 
     static checkBoardForPairedSets() {
@@ -238,6 +244,7 @@ class Game {
             }
         })
 
+        return pairs;
     }
 
     static retrieveAllCardsInPlay() {

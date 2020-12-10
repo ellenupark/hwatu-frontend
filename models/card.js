@@ -147,11 +147,12 @@ class Card {
     }
 
     static renderCardHtmlFromDatabase(card) {
+        debugger
         let newCard = document.createElement('img');
-        newCard.dataset.month = card.month;
-        newCard.dataset.category = card.category;
-        newCard.id = `card-${card.id}`
-        newCard.setAttribute('src', card.image);
+        newCard.dataset.month = card.data.attributes.month;        ;
+        newCard.dataset.category = card.data.attributes.category;
+        newCard.id = `card-${card.data.id}`
+        newCard.setAttribute('src', card.data.attributes.image);
         return newCard;
     }
 
