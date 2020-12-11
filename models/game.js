@@ -249,17 +249,13 @@ class Game {
     };
 
     static async checkBoardForPairedSets() {
-        // let playedCard = playedCardDiv.firstElementChild;
         let cards = Game.retrieveAllCardsInPlay();
-
         let pairs = {}
 
         for (let i = 0; i < cards.length; i++) {
             pairs[cards[i].dataset.month] ||= [];
             pairs[cards[i].dataset.month].push(cards[i])
         }
-
-        
        return pairs;
     }
 
@@ -269,7 +265,6 @@ class Game {
         const months = Object.keys(pairs);
 
         await asyncForEach(months, async (month) => {
-
             if (pairs[month].length === 1 && pairs[month].includes(playedCard)) {
                 
                 let playedCardMovedToBoard = await Game.movePlayedCardToBoard();
@@ -444,6 +439,25 @@ class Game {
         
         return playedCard;
     }
+
+
+
+
+
+
+    static async checkBoardAndHandsForSets() {
+        debugger
+
+
+
+        
+    }
+
+
+
+
+
+
 
     static async calculateWinner() {
         let userCards = await Game.retrieveAllPairedCardsFromPlayer(game.user)

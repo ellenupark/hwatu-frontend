@@ -77,6 +77,12 @@ img {
     margin: 0 auto;
 }
 
+/* Board Row */
+
+#board {
+    border: 1px solid red;
+}
+
 /* Paired Sets */
 
 #computer-pairs {

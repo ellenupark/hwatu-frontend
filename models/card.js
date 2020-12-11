@@ -104,7 +104,7 @@ class Card {
     }
 
     static async dealCards() {
-        Card.clearAllCardsFromBoard();
+        await Card.clearAllCardsFromBoard();
         let cards = await API.retrieveAllCards();
 
         let player_list = {
@@ -125,7 +125,7 @@ class Card {
         await asyncForEach(cards.data, async (card) => {
             let assignedPlayer = sample(Object.keys(player_list));
             
-            fetch(`http://localhost:3000/cards/${card.id}`, {
+            return fetch(`http://localhost:3000/cards/${card.id}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
@@ -138,9 +138,11 @@ class Card {
             })
             .then(resp => resp.json())
             .then(card => Card.loadCardsToSummary(card))
-            .then(card => new Card(card.data.id, card.data.attributes.category, card.data.attributes.image, card.data.attributes.matched, card.data.attributes.player.id, card.data.attributes.player.role, card.data.attributes.month));
-            
-            player_list[assignedPlayer].count == 0 ? delete player_list[assignedPlayer] : player_list[assignedPlayer].count -= 1;
+            .then(card => {
+                player_list[assignedPlayer].count == 0 ? delete player_list[assignedPlayer] : player_list[assignedPlayer].count -= 1;
+                let newCard = new Card(card.data.id, card.data.attributes.category, card.data.attributes.image, card.data.attributes.matched, card.data.attributes.player.id, card.data.attributes.player.role, card.data.attributes.month);
+                return newCard;
+            });
         })
         return cards;
     }
@@ -177,9 +179,13 @@ class Card {
         return newCard;
     }
 
-    static clearAllCardsFromBoard() {
+    static async clearAllCardsFromBoard() {
         const roles = ['computer', 'user', 'deck', 'board'];
-        roles.forEach(role => document.getElementById(`${role}-container`).innerHTML = "");
+        await asyncForEach(roles, async (role) => {
+            document.getElementById(`${role}-container`).innerHTML = ""
+            return role;
+        })
+        return roles;
     }
 };
 
