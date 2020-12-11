@@ -492,21 +492,29 @@ class Game {
 
         document.getElementById('main-game').classList.add('hidden')
         winnerDiv.classList.remove('hidden')
+
+        Card.dealCards();
     }
 
     static exitGame() {
         game.reset();
-        Card.dealCards();
         loadGame();
+
+        document.getElementById('user-pairs').innerHTML = '<h3 id="player-pairs"></h3>'
+        document.getElementById('computer-pairs').innerHTML = '<h3>Computer Pairs</h3>'
+
         document.getElementById('main-game').classList.add('hidden')
         document.getElementById('winner').classList.add('hidden')
         document.getElementById('welcome').classList.remove('hidden')
     }
 
-    static resetGame() {
+    static async resetGame() {
         game.turnCount = 0;
-        Card.dealCards();
         game.playGame();
+
+        document.getElementById('user-pairs').innerHTML = `<h3 id="player-pairs">${game.name}'s Pairs</h3>`
+        document.getElementById('computer-pairs').innerHTML = '<h3>Computer Pairs</h3>'
+
         document.getElementById('main-game').classList.remove('hidden')
         document.getElementById('winner').classList.add('hidden')
     }
