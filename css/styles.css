@@ -94,9 +94,6 @@ img {
     min-height: 150px;
 }
 
-.test {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 200px;
+#winner {
+    height: 100vh;
 }
