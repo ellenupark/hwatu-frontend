@@ -97,6 +97,7 @@ class Card {
     }
 
     static async dealCards() {
+        clearAllCardsFromBoard();
         let cards = await API.retrieveAllCards();
 
         let player_list = {
@@ -117,9 +118,6 @@ class Card {
                 id: game.board.id
             }
         };
-        
-        const playerRoles = Object.keys(player_list)
-        playerRoles.forEach(role => document.getElementById(`${role}-container`).innerHTML = "");
 
         cards.data.forEach(function(card) {
             let assignedPlayer = sample(Object.keys(player_list))
@@ -163,6 +161,11 @@ class Card {
         newCard.id = card.id;
         newCard.setAttribute('src', card.src);
         return newCard;
+    }
+
+    static clearAllCardsFromBoard() {
+        const roles = ['computer', 'user', 'deck', 'board'];
+        roles.forEach(role => document.getElementById(`${role}-container`).innerHTML = "");
     }
 };
 
