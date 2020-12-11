@@ -1,8 +1,5 @@
-document.addEventListener("DOMContentLoaded", function(){
-  API.loadPlayers()
-  API.createCardSummary()
-  Card.dealCards()
-  loadGame()
+document.addEventListener("DOMContentLoaded", function() {
+  prepareGame();
 })
 
 const gameForm = document.getElementById("form")
@@ -12,6 +9,14 @@ const welcomeDiv = document.getElementById("welcome")
 const mainGameDiv = document.getElementById('main-game')
 const navBar = document.getElementById('nav-bar')
 const gameURL = "http://localhost:3000/games"
+
+const prepareGame = async () => {
+  await API.loadPlayers()
+  debugger
+  API.createCardSummary()
+  Card.dealCards()
+  loadGame()
+}
 
 function loadGame() {
     gameForm.addEventListener("submit", function(event) {

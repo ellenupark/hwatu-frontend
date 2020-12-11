@@ -6,15 +6,18 @@ class API {
 
     static async loadPlayers() {
         let playersData = await fetch("http://localhost:3000/players").then(resp => resp.json());
-
-        debugger
-        API.createPlayers(players);
-
+        return API.createPlayers(playersData);
     };
 
 
-    static async createPlayers(players) {
-        players.data.forEach(player => new Player(player.id, player.attributes.role);
+    static createPlayers(players) {
+        return players.data.map(player => new Player(player.id, player.attributes.role));
+        // const allPlayers = []
+        // await asyncForEach(players.data, async (player) => {
+        //     const newPlayer = new Player(player.id, player.attributes.role);
+        //     allPlayers.push(newPlayer);
+        //     return newPlayer;
+        // })
     };
 
     static async retrieveAllCards() {
