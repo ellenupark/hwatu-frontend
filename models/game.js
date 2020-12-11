@@ -440,25 +440,6 @@ class Game {
         return playedCard;
     }
 
-
-
-
-
-
-    static async checkBoardAndHandsForSets() {
-        debugger
-
-
-
-        
-    }
-
-
-
-
-
-
-
     static async calculateWinner() {
         let userCards = await Game.retrieveAllPairedCardsFromPlayer(game.user)
         let computerCards = await Game.retrieveAllPairedCardsFromPlayer(game.computer)

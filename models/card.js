@@ -124,6 +124,12 @@ class Card {
 
         await asyncForEach(cards.data, async (card) => {
             let assignedPlayer = sample(Object.keys(player_list));
+            let playerCards = await API.retrieveCardsByPlayer(game[assignedPlayer].id);
+
+            if (playerCards.filter(c => c.month === card.attributes.month) > 3) {
+                assignedPlayer = sample(Object.keys(player_list).filter(p => p !== assignedPlayer))
+                debugger
+            }
             
             return fetch(`http://localhost:3000/cards/${card.id}`, {
                 method: "PATCH",

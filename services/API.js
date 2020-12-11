@@ -9,6 +9,11 @@ class API {
         return await resp.json();
     }
 
+    static async retrieveCardsByPlayer(id) {
+        const player = await fetch(`http://localhost:3000/players/${id}`).then(resp => resp.json());
+        return player.data.attributes.cards;
+    }
+
     static async createCardSummary() {
         return fetch("http://localhost:3000/cards")
             .then(resp => resp.json())

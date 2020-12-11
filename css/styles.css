@@ -6,6 +6,8 @@ body {
     display: none;
 }
 
+/* Welcome Page */
+
 #welcome {
     background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://japandeluxetours.com/uploads/2017/06/20170609135305_593b0ab176b4c.jpg');
     height: 100vh;
@@ -14,6 +16,113 @@ body {
     padding: 0;
     color: white;
 }
+
+.animated {
+    -webkit-animation-duration: 2.5s;
+    -moz-animation-duration: 2.5s;
+    -o-animation-duration: 2.5s;
+    animation-duration: 2.5s;
+    -webkit-animation-fill-mode: both;
+    -moz-animation-fill-mode: both;
+    -o-animation-fill-mode: both;
+    animation-fill-mode: both;
+  }
+  
+  @-webkit-keyframes fadeIn {
+    0% {
+      opacity: 0; 
+    }
+  
+    100% {
+      opacity: 1; 
+    }
+  }
+  
+  @-moz-keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+  
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  @-o-keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+  
+    100% {
+      opacity: 1;
+    }
+  } 
+  
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+  
+    100% {
+      opacity: 1;
+    } 
+  }
+  
+  .fadeIn {
+    -webkit-animation-name: fadeIn;
+    -moz-animation-name: fadeIn;
+    -o-animation-name: fadeIn;
+    animation-name: fadeIn;
+  }
+  
+  /* --- Animation --- */
+  @-webkit-keyframes fadeInUp {
+    0% {
+      opacity: 0;
+    }
+  
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  @-moz-keyframes fadeInUp {
+    0% {
+      opacity: 0;
+    }
+  
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  @-o-keyframes fadeInUp {
+    0% {
+      opacity: 0;
+    }
+  
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+    }
+  
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  .fadeInUp {
+    -webkit-animation-name: fadeInUp;
+    -moz-animation-name: fadeInUp;
+    -o-animation-name: fadeInUp;
+    animation-name: fadeInUp;
+    }
+
 
 form {
     display: table;
@@ -81,6 +190,7 @@ img {
 
 #board {
     border: 1px solid red;
+    padding: 10px 0px 10px 0px;
 }
 
 /* Paired Sets */
@@ -112,6 +222,7 @@ img {
     background-color: lightpink;
     border: 2px solid grey;
     padding: 5px;
+    border-radius: 20px;
 }
 
 .maintain-height {
