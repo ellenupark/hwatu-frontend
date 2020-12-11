@@ -233,16 +233,6 @@ class Game {
 
     // GAME MECHANICS
     
-    static highlightMatchingCardMonths() {
-        const playedCard = playedCardDiv.firstElementChild;
-        const playedCardMonth = playedCard.dataset.month;
-
-        let cardsOnBoard = Array.from(boardContainer.children);
-        let matchedCards = cardsOnBoard.filter(card => card.dataset.month === playedCardMonth);
-        
-        return matchedCards;
-    }
-    
     static async flipCardFromDeck() {
         if (game.turnCount === 22) {
             deckContainer.firstElementChild.remove();
@@ -302,7 +292,6 @@ class Game {
             } else if (pairs[month].length === 4) {
                 if (pairs[month].includes(playedCard) || pairs[month].includes(flippedCard)) {
                     pairs[month].forEach(c => c.classList.remove('highlight'));
-                    
                     let collectedCards = await Game.collectPairsFromBoard(pairs[month]);
                 }
             }
@@ -325,7 +314,6 @@ class Game {
         } else {
             return boardCards;
         }
-         
     };
 
     // When played card does not make any pairs
