@@ -88,3 +88,15 @@ img {
     border: 2px solid grey;
     padding: 5px;
 }
+
+.maintain-height {
+    vertical-align: middle;
+    min-height: 150px;
+}
+
+.test {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+}

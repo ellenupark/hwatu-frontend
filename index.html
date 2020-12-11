@@ -160,7 +160,7 @@
             </div>
         </nav>
         
-        <div class="container-fluid" id="welcome">
+        <div class="container-fluid hidden" id="welcome">
             <div class="row h-100">
                 <div class="col-sm-12 my-auto">
                     <h3>Please enter you name</h3>
@@ -180,17 +180,27 @@
             
         </div>
 
+        <div class="container-fluid" id="winner">
+            <div class="row h-100">
+                <div class="col-sm-12 my-auto">
+                    <h3 id="game-winner">You Won!</h3>
+                    <button type="submit" class="btn btn-primary mb-2">Play Again?</button>
+                    <button type="submit" class="btn btn-primary mb-2">Exit</button>
+                </div>
+            </div>
+        </div>
+
         <div class="container-fluid hidden h-100" id="main-game">
             <div class="row justify-content-center">
                 <div class="col-8">
-                    <div class="row align-items-center justify-content-center">
+                    <div class="row align-items-center justify-content-center maintain-height">
                         <div class="col" id="computer-container">
 
                         </div>
                         <div class="col-3">
                         </div>
                     </div>
-                    <div class="row align-items-center justify-content-center">
+                    <div class="row align-items-center justify-content-center maintain-height">
                         <div class="col-2" id="deck-container">
 
                         </div>
@@ -201,7 +211,7 @@
 
                         </div>
                     </div>
-                    <div class="row align-items-center justify-content-center">
+                    <div class="row align-items-center justify-content-center maintain-height">
                         <div class="col" id="user-container">
                            
                         </div>

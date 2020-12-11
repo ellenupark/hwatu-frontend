@@ -51,11 +51,12 @@ class Game {
     // --------- GAME MECHANICS ---------
 
     async playGame() {
+        
         this.turnCount += 1;
         let userCards = userContainer.children;
 
-        if (userCards.length === 0) {
-            Game.flipCardFromDeck();
+        if (userContainer.childElementCount === 0) {
+            Game.playUserTurnWithoutCards();
         } else {
             for (let i = 0; i < userCards.length; i++) {
                 userCards[i].addEventListener('click', Game.playTurn)
@@ -64,12 +65,36 @@ class Game {
 
         return this.turnCount;
     }
+
+    static async playTurnWithoutCards() {
+        
+        game.turnCount += 1;
+
+        if (game.turnCount === 23) {
+            Game.displayWinner();
+        } else {
+            let flippedCard = await Game.flipCardFromDeck();
+            const finalPairsOnBoard = await Game.checkBoardForPairedSets()
+            await timeout(1000);
+            
+            const finalSets = await Game.findSets(finalPairsOnBoard)
+
+            if (game.currentPlayer.role === 'user' && computerContainer.childElementCount !== 0) {
+                Game.playComputerTurn()
+            } else if (game.currentPlayer.role === 'user' && computerContainer.childElementCount === 0) {
+                Game.playTurnWithoutCards();
+            } else if (game.currentPlayer.role === 'computer' && userContainer.childElementCount !== 0) {
+                game.playGame()
+            } else {
+                Game.playTurnWithoutCards();
+            }
+        }
+    }
     
     // EDITED
 
     static async playTurn() {
         if (game.currentPlayer.role === 'user') {
-            
             const playedCard = await Game.moveCardToBoard();
         }
 
@@ -116,10 +141,14 @@ class Game {
         const finalSets = await Game.findSets(finalPairsOnBoard)
         
 
-        if (game.currentPlayer.role === 'user') {
+        if (game.currentPlayer.role === 'user' && computerContainer.childElementCount !== 0) {
             Game.playComputerTurn()
+        } else if (game.currentPlayer.role === 'user' && computerContainer.childElementCount === 0) {
+            Game.playTurnWithoutCards();
+        } else if (game.currentPlayer.role === 'computer' && userContainer.childElementCount !== 0) {
+            game.playGame()
         } else {
-            game.playGame();
+            Game.playTurnWithoutCards();
         }
     };
 
@@ -270,7 +299,7 @@ class Game {
     
     static async flipCardFromDeck() {
         if (game.turnCount === 22) {
-            return;
+            deckContainer.firstElementChild.remove();
         }
 
         const topCardOfDeck = await API.fetchRandomCardFromDeck();
@@ -316,7 +345,7 @@ class Game {
     // EDITED
 
     static async checkBoardForPairedSets() {
-        let playedCard = playedCardDiv.firstElementChild;
+        // let playedCard = playedCardDiv.firstElementChild;
         let cards = Game.retrieveAllCardsInPlay();
 
         let pairs = {}
@@ -360,20 +389,23 @@ class Game {
     // EDITED
     static async findSets(pairs) {
         let playedCard = playedCardDiv.firstElementChild;
+        let flippedCard = boardContainer.lastElementChild;
         const months = Object.keys(pairs);
 
         await asyncForEach(months, async (month) => {
+
             if (pairs[month].length === 1 && pairs[month].includes(playedCard)) {
                 
                 let playedCardMovedToBoard = await Game.movePlayedCardToBoard();
             } else if (pairs[month].length === 2) {
-                if (pairs[month].includes(playedCard) || pairs[month].includes(boardContainer.lastElementChild)) {
-                    pairs[month].forEach(c => c.classList.remove('highlight'));
+                
+                if (pairs[month].includes(playedCard) || pairs[month].includes(flippedCard)) {
                     
+                    pairs[month].forEach(c => c.classList.remove('highlight'));
                     let collectedCards = await Game.collectPairsFromBoard(pairs[month]);
                 }
             } else if (pairs[month].length === 3 && pairs[month].includes(playedCard)) {
-                if (boardContainer.lastElementChild.dataset.month == playedCard.dataset.month) {
+                if (flippedCard.dataset.month == playedCard.dataset.month) {
                     pairs[month].forEach(c => c.classList.remove('highlight', 'set'));
                     let playedCardMovedToBoard = await Game.movePlayedCardToBoard();
                 } else {
@@ -383,7 +415,7 @@ class Game {
                     let collectedCards = await Game.collectPairsFromBoard(chosenPair);
                 }
             } else if (pairs[month].length === 4) {
-                if (pairs[month].includes(playedCard) || pairs[month].includes(boardContainer.lastElementChild)) {
+                if (pairs[month].includes(playedCard) || pairs[month].includes(flippedCard)) {
                     pairs[month].forEach(c => c.classList.remove('highlight'));
                     
                     let collectedCards = await Game.collectPairsFromBoard(pairs[month]);
@@ -480,11 +512,16 @@ class Game {
         let playedCard = playedCardDiv.children[0];
         let boardCards = boardContainer.children;
 
-        cards.push(playedCard);
-        for (let i = 0; i < boardCards.length; i++) {
-            cards.push(boardCards[i])
-        };
-        return cards;
+        if (playedCardDiv.children[0] !== undefined) {
+            cards.push(playedCard);
+            for (let i = 0; i < boardCards.length; i++) {
+                cards.push(boardCards[i])
+            };
+            return cards;
+        } else {
+            return boardCards;
+        }
+         
     };
 
     // When played card does not make any pairs
@@ -545,17 +582,13 @@ class Game {
     }
 
     static async playComputerTurn() {
+        
         await timeout(1000);
         game.turnCount += 1;
 
-        // If no cards on board execute calculate points, otherwise continue with computer turn
-        if (boardContainer.childElementCount === 0 && deckContainer.childElementCount === 0 && userContainer.childElementCount === 0 && computerContainer.childElementCount === 0) {
-            Game.calculateWinner();
-        } else {
-            const possibleBoardPairs = await Game.findPossibleComputerPairs();
-            const playedCard = await Game.pickComputerCardToPlay(possibleBoardPairs);
-            Game.playTurn();
-        }
+        const possibleBoardPairs = await Game.findPossibleComputerPairs();
+        const playedCard = await Game.pickComputerCardToPlay(possibleBoardPairs);
+        Game.playTurn();
     }
 
     static async findPossibleComputerPairs() {
@@ -637,9 +670,129 @@ class Game {
     //     }, 1000);
     // }
 
-    static calculateWinner() {
-        
+    static async calculateWinner() {
+        let userCards = await Game.retrieveAllPairedCardsFromPlayer(game.user)
+        let computerCards = await Game.retrieveAllPairedCardsFromPlayer(game.computer)
+
+        let userPoints = 0;
+        let computerPoints = 0;
+
+        userPoints += Game.calculateBrightCardPoints(userCards)
+        userPoints += Game.calculateAnimalCardPoints(userCards)
+        userPoints += Game.calculateRibbonCardPoints(userCards)
+        userPoints += Game.calculateJunkCardPoints(userCards)
+
+        computerPoints += Game.calculateBrightCardPoints(computerCards)
+        computerPoints += Game.calculateAnimalCardPoints(computerCards)
+        computerPoints += Game.calculateRibbonCardPoints(computerCards)
+        computerPoints += Game.calculateJunkCardPoints(computerCards)
+
+        userPoints > computerPoints ? game.user : game.computer;
     }
+
+    static async displayWinner() {
+        const winner = await Game.calculateWinner();
+
+        const winnerDiv = document.getElementById('winner');
+        const displayName = document.getElementById('game-winner')
+
+        winner === game.user ? displayName.innerText = `${game.name} Won!` : displayName.innerText = 'You Lost! Better Luck Next Time!'
+
+        document.getElementById('main-game').classList.add('hidden')
+        winnerDiv.classList.remove('hidden')
+    }
+
+    static async retrieveAllPairedCardsFromPlayer(player) {
+        const playerSets = Array.from(document.getElementById(`${player.role}-pairs`).children);
+        playerSets.shift();
+
+        let playerCards = [];
+
+        playerSets.forEach(function(month) {
+            Array.from(month.children).forEach(card => playerCards.push(card))
+        })
+
+        return playerCards;
+    }
+
+    static calculateBrightCardPoints(cards) {
+        let points = 0;
+        let brightCards = cards.filter(card => card.dataset.category === "bright")
+
+        switch (brightCards.length) {
+            case 5:
+                points += 15;
+                break;
+            case 4:
+                points += 4;
+                break;
+            case 3:
+                brightCards.some(card => card.dataset.month === 'December') ? points += 2 : points += 3;
+                break;
+        }
+        return points;
+    }
+
+    static calculateAnimalCardPoints(cards) {
+        let points = 0;
+        let animalCards = cards.filter(card => card.dataset.category === "animal")
+
+        if (animalCards.length > 5) {
+            points += 5;
+            let additionalPoints = animalCards.length - 5;
+            points += additionalPoints;
+        } else if (animalCards.length === 5) {
+            points += 1;
+        }
+
+        if (animalCards.some(card => card.dataset.month === "February") && animalCards.some(card => card.dataset.month === "April") && animalCards.some(card => card.dataset.month === "August")) {
+            points += 5;
+        }
+
+        return points;
+    }
+
+    static calculateRibbonCardPoints(cards) {
+        let points = 0;
+        let ribbonCards = cards.filter(card => card.dataset.category === "ribbon")
+
+        if (ribbonCards.length > 5) {
+            points += 5;
+            let additionalPoints = ribbonCards.length - 5;
+            points += additionalPoints;
+        } else if (ribbonCards.length === 5) {
+            points += 1;
+        }
+
+        if (ribbonCards.some(card => card.dataset.month === "January") && ribbonCards.some(card => card.dataset.month === "February") && ribbonCards.some(card => card.dataset.month === "March")) {
+            points += 3;
+        }
+
+        if (ribbonCards.some(card => card.dataset.month === "June") && ribbonCards.some(card => card.dataset.month === "September") && ribbonCards.some(card => card.dataset.month === "October")) {
+            points += 3;
+        }
+
+        if (ribbonCards.some(card => card.dataset.month === "April") && ribbonCards.some(card => card.dataset.month === "May") && ribbonCards.some(card => card.dataset.month === "June")) {
+            points += 3;
+        }
+        return points;
+    }
+
+    static calculateJunkCardPoints(cards) {
+        let points = 0;
+        let junkCards = cards.filter(card => card.dataset.category === "junk")
+
+        if (junkCards.length > 10) {
+            points += 1;
+            let additionalPoints = junkCards.length - 10;
+            points += additionalPoints;
+        } else if (junkCards.length === 10) {
+            points += 1;
+        }
+        return points;
+    }
+
+
 };
 
 const game = new Game();
