@@ -13,8 +13,8 @@ const gameURL = "http://localhost:3000/games"
 const prepareGame = async () => {
   await API.loadPlayers()
   debugger
-  API.createCardSummary()
-  Card.dealCards()
+  // API.createCardSummary()
+  await Card.dealCards()
   loadGame()
 }
 

@@ -79,6 +79,13 @@ class Card {
         return cardImg;
     }
 
+    static createCardSummaryHtml(card) {
+        let cardHtml = document.createElement('img');
+        cardHtml.setAttribute('src', card.data.attributes.image);
+        cardHtml.style.maxWidth = "45px";
+        return cardHtml;
+    }
+
     static loadPlayerCards(player) {
         fetch(`http://localhost:3000/players/${player.id}`)
             .then(resp => resp.json())
@@ -102,25 +109,22 @@ class Card {
 
         let player_list = {
             user: {
-                count: 8
-                // id: game.user.id
+                count: 7
             },
             computer: {
-                count: 8,
-                // id: game.computer.id
+                count: 7,
             },
             deck: {
-                count: 22
-                // id: game.deck.id
+                count: 21
             },
             board: {
-                count: 10
-                // id: game.board.id
+                count: 9
             }
         };
 
-        await asyncForEach(cards, async (card) => {
+        await asyncForEach(cards.data, async (card) => {
             let assignedPlayer = sample(Object.keys(player_list));
+            
             fetch(`http://localhost:3000/cards/${card.id}`, {
                 method: "PATCH",
                 headers: {
@@ -133,39 +137,26 @@ class Card {
                 })
             })
             .then(resp => resp.json())
-            .then(card => new Card(card.data.id, card.data.attributes.category, card.data.attributes.image, card.data.attributes.matched, card.data.attributes.player.id, card.data.attributes.player.role, card.data.attributes.month))
+            .then(card => Card.loadCardsToSummary(card))
+            .then(card => new Card(card.data.id, card.data.attributes.category, card.data.attributes.image, card.data.attributes.matched, card.data.attributes.player.id, card.data.attributes.player.role, card.data.attributes.month));
             
             player_list[assignedPlayer].count == 0 ? delete player_list[assignedPlayer] : player_list[assignedPlayer].count -= 1;
         })
+        return cards;
+    }
 
-
-
-
-
-        // cards.data.forEach(function(card) {
-        //     let assignedPlayer = sample(Object.keys(player_list))
-        //     fetch(`http://localhost:3000/cards/${card.id}`, {
-        //         method: "PATCH",
-        //         headers: {
-        //             "Content-Type": "application/json",
-        //             "Accept": "application/json"
-        //         },
-        //         body: JSON.stringify({
-        //             player_id: player_list[assignedPlayer].id,
-        //             matched: false
-        //         })
-        //     })
-        //     .then(resp => resp.json())
-        //     .then(function(card) {
-        //         new Card(card.data.id, card.data.attributes.category, card.data.attributes.image, card.data.attributes.matched, card.data.attributes.player.id, card.data.attributes.player.role, card.data.attributes.month)
-        //     })
-
-        //     player_list[assignedPlayer].count -= 1;
-
-        //     if (player_list[assignedPlayer].count == 0) {
-        //         delete player_list[assignedPlayer]
-        //     }
-        // });
+    static loadCardsToSummary(card) {
+        const cardMonth = downcaseFirstLetter(card.data.attributes.month);
+        const parentMonthDiv = document.getElementById(cardMonth);
+        const cardMonthImg = Card.createCardSummaryHtml(card)
+        parentMonthDiv.appendChild(cardMonthImg)
+    
+        const cardCategory = card.data.attributes.category;
+        const parentCategoryDiv =  document.getElementsByClassName(cardCategory)[0];
+        const cardCategoryImg = Card.createCardSummaryHtml(card)
+        parentCategoryDiv.appendChild(cardCategoryImg)
+        
+        return card;
     }
 
     static renderCardHtmlFromDatabase(card) {
