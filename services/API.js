@@ -1,27 +1,20 @@
 class API {
 
-    // static addPlayersAndCards(){
-    //     this.loadPlayers()
-    //     this.loadCards();
-    // };
-
     static loadCards() {
         Card.assignCards();
     };
 
-    static loadPlayers() {
-        fetch("http://localhost:3000/players")
-        .then(resp => resp.json())
-        .then(players => {
-            API.createPlayers(players);
-            return players;
-        }) 
+    static async loadPlayers() {
+        let playersData = await fetch("http://localhost:3000/players").then(resp => resp.json());
+
+        debugger
+        API.createPlayers(players);
+
     };
 
-    static createPlayers(players) {
-        players.data.forEach(player => {
-            new Player(player.id, player.attributes.role)
-        })
+
+    static async createPlayers(players) {
+        players.data.forEach(player => new Player(player.id, player.attributes.role);
     };
 
     static async retrieveAllCards() {

@@ -97,30 +97,30 @@ class Card {
     }
 
     static async dealCards() {
-        clearAllCardsFromBoard();
+        Card.clearAllCardsFromBoard();
         let cards = await API.retrieveAllCards();
 
         let player_list = {
             user: {
-                count: 8,
-                id: game.user.id
+                count: 8
+                // id: game.user.id
             },
             computer: {
                 count: 8,
-                id: game.computer.id
+                // id: game.computer.id
             },
             deck: {
-                count: 22,
-                id: game.deck.id
+                count: 22
+                // id: game.deck.id
             },
             board: {
-                count: 10,
-                id: game.board.id
+                count: 10
+                // id: game.board.id
             }
         };
 
-        cards.data.forEach(function(card) {
-            let assignedPlayer = sample(Object.keys(player_list))
+        await asyncForEach(cards, async (card) => {
+            let assignedPlayer = sample(Object.keys(player_list));
             fetch(`http://localhost:3000/cards/${card.id}`, {
                 method: "PATCH",
                 headers: {
@@ -128,21 +128,44 @@ class Card {
                     "Accept": "application/json"
                 },
                 body: JSON.stringify({
-                    player_id: player_list[assignedPlayer].id,
+                    player_id: game[assignedPlayer].id,
                     matched: false
                 })
             })
             .then(resp => resp.json())
-            .then(function(card) {
-                new Card(card.data.id, card.data.attributes.category, card.data.attributes.image, card.data.attributes.matched, card.data.attributes.player.id, card.data.attributes.player.role, card.data.attributes.month)
-            })
+            .then(card => new Card(card.data.id, card.data.attributes.category, card.data.attributes.image, card.data.attributes.matched, card.data.attributes.player.id, card.data.attributes.player.role, card.data.attributes.month))
+            
+            player_list[assignedPlayer].count == 0 ? delete player_list[assignedPlayer] : player_list[assignedPlayer].count -= 1;
+        })
 
-            player_list[assignedPlayer].count -= 1;
 
-            if (player_list[assignedPlayer].count == 0) {
-                delete player_list[assignedPlayer]
-            }
-        });
+
+
+
+        // cards.data.forEach(function(card) {
+        //     let assignedPlayer = sample(Object.keys(player_list))
+        //     fetch(`http://localhost:3000/cards/${card.id}`, {
+        //         method: "PATCH",
+        //         headers: {
+        //             "Content-Type": "application/json",
+        //             "Accept": "application/json"
+        //         },
+        //         body: JSON.stringify({
+        //             player_id: player_list[assignedPlayer].id,
+        //             matched: false
+        //         })
+        //     })
+        //     .then(resp => resp.json())
+        //     .then(function(card) {
+        //         new Card(card.data.id, card.data.attributes.category, card.data.attributes.image, card.data.attributes.matched, card.data.attributes.player.id, card.data.attributes.player.role, card.data.attributes.month)
+        //     })
+
+        //     player_list[assignedPlayer].count -= 1;
+
+        //     if (player_list[assignedPlayer].count == 0) {
+        //         delete player_list[assignedPlayer]
+        //     }
+        // });
     }
 
     static renderCardHtmlFromDatabase(card) {
