@@ -12,12 +12,6 @@ class API {
 
     static createPlayers(players) {
         return players.data.map(player => new Player(player.id, player.attributes.role));
-        // const allPlayers = []
-        // await asyncForEach(players.data, async (player) => {
-        //     const newPlayer = new Player(player.id, player.attributes.role);
-        //     allPlayers.push(newPlayer);
-        //     return newPlayer;
-        // })
     };
 
     static async retrieveAllCards() {
@@ -25,8 +19,8 @@ class API {
         return await resp.json();
     }
 
-    static createCardSummary() {
-        fetch("http://localhost:3000/cards")
+    static async createCardSummary() {
+        return fetch("http://localhost:3000/cards")
             .then(resp => resp.json())
             .then(cards => {
                cards.data.forEach(card => {
@@ -35,6 +29,25 @@ class API {
                return cards;
             }) 
     };
+
+    static loadCardsToSummary(card) {
+        const cardMonth = downcaseFirstLetter(card.attributes.month);
+        const parentMonthDiv = document.getElementById(cardMonth);
+        const cardMonthImg = createCardSummaryHtml(card)
+        parentMonthDiv.appendChild(cardMonthImg)
+    
+        const cardCategory = card.attributes.category;
+        const parentCategoryDiv =  document.getElementsByClassName(cardCategory)[0];
+        const cardCategoryImg = createCardSummaryHtml(card)
+        parentCategoryDiv.appendChild(cardCategoryImg)
+    }
+
+    static createCardSummaryHtml(card) {
+        let cardHtml = document.createElement('img');
+        cardHtml.setAttribute('src', card.attributes.image);
+        cardHtml.style.maxWidth = "45px";
+        return cardHtml;
+    }
 
     static async loadUserName() {
         return fetch("http://localhost:3000/games")
@@ -60,24 +73,6 @@ class API {
                 })
             })
             .then(resp => Card.addPlayCardEventToUser())
-    }
-
-    static loadCardsToSummary(card) {
-        const cardMonth = downcaseFirstLetter(card.attributes.month);
-        const parentMonthDiv = document.getElementById(cardMonth);
-
-        let cardMonthImg = document.createElement('img');
-        cardMonthImg.setAttribute('src', card.attributes.image);
-        cardMonthImg.style.maxWidth = "45px";
-        parentMonthDiv.appendChild(cardMonthImg)
-    
-        const cardCategory = card.attributes.category;
-        const parentCategoryDiv =  document.getElementsByClassName(cardCategory)[0];
-
-        let cardCategoryImg = document.createElement('img');
-        cardCategoryImg.setAttribute('src', card.attributes.image);
-        cardCategoryImg.style.maxWidth = "45px";
-        parentCategoryDiv.appendChild(cardCategoryImg)
     }
 
     static async updateCardPlayerToBoard(card) {
