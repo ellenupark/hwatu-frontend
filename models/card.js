@@ -97,7 +97,7 @@ class Card {
     }
 
     static async dealCards() {
-        let cards = await API.retrieveAllCards()
+        let cards = await API.retrieveAllCards();
 
         let player_list = {
             user: {
@@ -116,11 +116,10 @@ class Card {
                 count: 10,
                 id: game.board.id
             }
-        }
-
-        Object.keys(player_list).forEach(function(player) {
-            document.getElementById(`${player}-container`).innerHTML = "";
-        })
+        };
+        
+        const playerRoles = Object.keys(player_list)
+        playerRoles.forEach(role => document.getElementById(`${role}-container`).innerHTML = "");
 
         cards.data.forEach(function(card) {
             let assignedPlayer = sample(Object.keys(player_list))

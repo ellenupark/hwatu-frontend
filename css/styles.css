@@ -79,6 +79,18 @@ img {
 
 /* Paired Sets */
 
+#computer-pairs {
+    padding-right: 10px;
+    border: 1px solid red;
+}
+
+#user-pairs {
+    padding-left: 10px;
+    border: 1px solid red;
+
+}
+
+
 .matched {
     display: inline-block;
     padding: 2px 3px 2px 3px;

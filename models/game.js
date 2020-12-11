@@ -234,15 +234,16 @@ class Game {
     // GAME MECHANICS
     
     static async flipCardFromDeck() {
-        if (game.turnCount === 22) {
-            deckContainer.firstElementChild.remove();
-        }
 
         const topCardOfDeck = await API.fetchRandomCardFromDeck();
         const flippedCard = await API.updateCardPlayerToBoard(topCardOfDeck);
 
         await timeout(1000);
         const renderFlippedCard = new Card(flippedCard.data.id, flippedCard.data.attributes.category, flippedCard.data.attributes.image, flippedCard.data.attributes.matched, flippedCard.data.attributes.player.id, flippedCard.data.attributes.player.role, flippedCard.data.attributes.month)
+
+        if (game.turnCount === 22) {
+            deckContainer.firstElementChild.remove();
+        }
 
         return renderFlippedCard;
     };
