@@ -38,6 +38,7 @@ function loadGame() {
           if (!newGame.errors){
             game.name = newGame.data.attributes.name
             game.playGame();
+            gameForm.reset();
           } else {
             throw new Error( `${newGame.errors}`)
           }
@@ -47,10 +48,10 @@ function loadGame() {
     })  
 }
 
-function getInfo(event){
-    return {
-      name: formName.value,
-    }
+function getInfo(event) {
+  return {
+    name: formName.value,
+  }
 }
 
 function createCardList() {

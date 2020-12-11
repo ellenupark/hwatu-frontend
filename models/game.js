@@ -13,11 +13,13 @@ class Game {
     constructor() {
         this.players = [];
         this.turnCount = 0;
-        this.started = false;
-        this.midTurn = false;
-        this.deckCount = 22;
         this.name = "";
     };
+
+    reset() {
+        this.turnCount = 0;
+        this.name = "";
+    }
 
     add(player){
         this.players.push(player)
@@ -423,89 +425,8 @@ class Game {
             }
 
         })
-        
         return pairs;
     }
-
-
-
-
-    // END EDITED
-
-
-
-
-    // UNEDITED
-    // static findSets(pairs) {
-    //     let playedCard = playedCardDiv.firstElementChild;
-    //     let result = Object.keys(pairs).map(async function (month) {
-    //         if (pairs[month].length === 1 && pairs[month].includes(playedCard)) {
-    //             return await Game.movePlayedCardToBoard();
-    //         } else if (pairs[month].length === 2) {
-    //             if (pairs[month].includes(playedCard) || pairs[month].includes(boardContainer.lastElementChild)) {
-    //                 pairs[month].forEach(c => c.classList.remove('highlight'));
-    //                 Game.collectPairsFromBoard(pairs[month]);
-    //             }
-    //         } else if (pairs[month].length === 3 && pairs[month].includes(playedCard)) {
-    //             if (boardContainer.lastElementChild.dataset.month == playedCard.dataset.month) {
-    //                 pairs[month].forEach(c => c.classList.remove('highlight'));
-    //                 Game.movePlayedCardToBoard();
-    //             } else {
-    //                 let chosenPair = pairs[month].filter(c => c.classList.contains('set') || c == playedCard);
-    //                 chosenPair.forEach(c => c.classList.remove('highlight'));
-    //                 Game.collectPairsFromBoard(chosenPair);
-    //             }
-    //         } else if (pairs[month].length === 4) {
-    //             if (pairs[month].includes(playedCard) || pairs[month].includes(boardContainer.lastElementChild)) {
-    //                 pairs[month].forEach(c => c.classList.remove('highlight'));
-    //                 Game.collectPairsFromBoard(pairs[month]);
-    //             }
-    //         }
-    //     })
-    //     return result;
-    // }
-
-
-    // static checkBoardForPairedSets() {
-    //     let cards = Game.retrieveAllCardsInPlay();
-    //     let pairs = {}
-
-    //     for (let i = 0; i < cards.length; i++) {
-    //         pairs[cards[i].dataset.month] ||= [];
-    //         pairs[cards[i].dataset.month].push(cards[i])
-    //     }
-    //     return Game.findSets(pairs)
-    // }
-
-    // static findSets(pairs) {
-    //     let playedCard = playedCardDiv.firstElementChild;
-    //     let result =  Object.keys(pairs).map(function (month) {
-    //         if (pairs[month].length === 1 && pairs[month].includes(playedCard)) {
-    //             Game.movePlayedCardToBoard();
-    //         } else if (pairs[month].length === 2) {
-    //             if (pairs[month].includes(playedCard) || pairs[month].includes(boardContainer.lastElementChild)) {
-    //                 pairs[month].forEach(c => c.classList.remove('highlight'));
-    //                 Game.collectPairsFromBoard(pairs[month]);
-    //             }
-    //         } else if (pairs[month].length === 3 && pairs[month].includes(playedCard)) {
-    //             if (boardContainer.lastElementChild.dataset.month == playedCard.dataset.month) {
-    //                 pairs[month].forEach(c => c.classList.remove('highlight'));
-    //                 Game.movePlayedCardToBoard();
-    //             } else {
-    //                 let chosenPair = pairs[month].filter(c => c.classList.contains('set') || c == playedCard);
-    //                 chosenPair.forEach(c => c.classList.remove('highlight'));
-    //                 Game.collectPairsFromBoard(chosenPair);
-    //             }
-    //         } else if (pairs[month].length === 4) {
-    //             if (pairs[month].includes(playedCard) || pairs[month].includes(boardContainer.lastElementChild)) {
-    //                 pairs[month].forEach(c => c.classList.remove('highlight'));
-    //                 Game.collectPairsFromBoard(pairs[month]);
-    //             }
-    //         }
-    //     })
-
-    //     return result;
-    // }
 
     static retrieveAllCardsInPlay() {
         let cards = [];
@@ -652,24 +573,6 @@ class Game {
         return playedCard;
     }
 
-    // static playComputerCard(card) {
-    //     let playedCard = document.createElement('img');
-
-    //     playedCard.setAttribute('src', `${card.dataset.url}`)
-    //     playedCard.dataset.month = card.dataset.month;
-    //     playedCard.dataset.category = card.dataset.category;
-    //     playedCard.id = card.id;
-
-    //     let inPlayDiv = document.getElementById('played-container');
-
-    //     setTimeout(function () {
-    //         card.remove();
-    //         inPlayDiv.appendChild(playedCard)
-    //         Game.highlightMatchingCardMonths();
-    //         return;
-    //     }, 1000);
-    // }
-
     static async calculateWinner() {
         let userCards = await Game.retrieveAllPairedCardsFromPlayer(game.user)
         let computerCards = await Game.retrieveAllPairedCardsFromPlayer(game.computer)
@@ -698,8 +601,31 @@ class Game {
 
         winner === game.user ? displayName.innerText = `${game.name} Won!` : displayName.innerText = 'You Lost! Better Luck Next Time!'
 
+        const playAgainButton = document.getElementById('play-again')
+        const exitButton = document.getElementById('exit')
+
+        playAgainButton.addEventListener('click', Game.resetGame)
+        exitButton.addEventListener('click', Game.exitGame)
+
         document.getElementById('main-game').classList.add('hidden')
         winnerDiv.classList.remove('hidden')
+    }
+
+    static exitGame() {
+        game.reset();
+        Card.dealCards();
+        loadGame();
+        document.getElementById('main-game').classList.add('hidden')
+        document.getElementById('winner').classList.add('hidden')
+        document.getElementById('welcome').classList.remove('hidden')
+    }
+
+    static resetGame() {
+        game.turnCount = 0;
+        Card.dealCards();
+        game.playGame();
+        document.getElementById('main-game').classList.remove('hidden')
+        document.getElementById('winner').classList.add('hidden')
     }
 
     static async retrieveAllPairedCardsFromPlayer(player) {
@@ -795,7 +721,7 @@ class Game {
 
 };
 
-const game = new Game();
+let game = new Game();
 
 function sample(array) {
     return array[Math.floor ( Math.random() * array.length )]
