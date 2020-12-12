@@ -7,6 +7,7 @@ class Card {
         this.playerId = playerId;
         this.playerRole = playerRole;
         this.month = month;
+        game[playerRole].add(this);
         this.matched === true ? this.renderCardMatchedSets() : this.renderCard();
     };
 
@@ -104,37 +105,40 @@ class Card {
     }
 
     static checkPlayerForFullHand(player) {
+        let full = false;
+
         switch (player.role) {
             case 'user':
-                player.cards.length === 8 ? true : false;
+                player.cards.length === 7 ? full = true : full = false;
                 break;
             case 'computer':
-                player.cards.length === 8 ? true : false;
+                player.cards.length === 7 ? full = true : full = false;
                 break;
             case 'deck':
-                player.cards.length === 22 ? true : false;
+                player.cards.length === 21 ? full = true : full = false;
                 break;
             case 'board':
-                player.cards.length === 10 ? true : false;
+                player.cards.length === 9 ? full = true : full = false;
                 break;
         };
-    }
+
+        return full;
+    };
 
     static async dealCards() {
         await Card.clearAllCardsFromBoard();
         let cards = await API.retrieveAllCards();
-
-        debugger
+        let playerPool = [game.user, game.board, game.computer, game.deck];
 
         await asyncForEach(cards.data, async (card) => {
-            let playerPool = [game.user, game.board, game.computer, game.deck];
             let assignedPlayer = sample(playerPool);
 
             if (assignedPlayer.cards.filter(c => c.month === card.month).length === 3) {
+                debugger
                 assignedPlayer = sample(playerPool.filter(p => p !== assignedPlayer));
             };
             
-            let assignedCard = await fetch(`http://localhost:3000/cards/${card.id}`, {
+            await fetch(`http://localhost:3000/cards/${card.id}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
@@ -148,13 +152,14 @@ class Card {
             .then(resp => resp.json())
             .then(card => Card.loadCardsToSummary(card))
             .then(card => {
-                assignedPlayer.cards.length == 0 ? delete player_list[assignedPlayer] : player_list[assignedPlayer].count -= 1;
-                let newCard = new Card(card.data.id, card.data.attributes.category, card.data.attributes.image, card.data.attributes.matched, card.data.attributes.player.id, card.data.attributes.player.role, card.data.attributes.month);
-                return newCard;
-            });
+                if (Card.checkPlayerForFullHand(assignedPlayer)) {
+                    playerPool.splice(playerPool.indexOf(assignedPlayer), 1);
+                };
+                return new Card(card.data.id, card.data.attributes.category, card.data.attributes.image, card.data.attributes.matched, card.data.attributes.player.id, card.data.attributes.player.role, card.data.attributes.month);
+            })
         })
         return cards;
-    }
+    };
 
     // static async dealCards() {
     //     await Card.clearAllCardsFromBoard();
