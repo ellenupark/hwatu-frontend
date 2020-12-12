@@ -103,6 +103,23 @@ class Card {
         });
     }
 
+    static checkPlayerForFullHand(player) {
+        switch (player.role) {
+            case 'user':
+                player.cards.length === 8 ? true : false;
+                break;
+            case 'computer':
+                player.cards.length === 8 ? true : false;
+                break;
+            case 'deck':
+                player.cards.length === 22 ? true : false;
+                break;
+            case 'board':
+                player.cards.length === 10 ? true : false;
+                break;
+        };
+    }
+
     static async dealCards() {
         await Card.clearAllCardsFromBoard();
         let cards = await API.retrieveAllCards();
@@ -110,29 +127,28 @@ class Card {
         debugger
 
         await asyncForEach(cards.data, async (card) => {
-            let assignedPlayer = sample(game.players);
-            let playerCards = await API.retrieveCardsByPlayer(game[assignedPlayer].id);
+            let playerPool = [game.user, game.board, game.computer, game.deck];
+            let assignedPlayer = sample(playerPool);
 
-            if (playerCards.filter(c => c.month === card.attributes.month) > 3) {
-                assignedPlayer = sample(Object.keys(player_list).filter(p => p !== assignedPlayer))
-                debugger
-            }
+            if (assignedPlayer.cards.filter(c => c.month === card.month).length === 3) {
+                assignedPlayer = sample(playerPool.filter(p => p !== assignedPlayer));
+            };
             
-            return fetch(`http://localhost:3000/cards/${card.id}`, {
+            let assignedCard = await fetch(`http://localhost:3000/cards/${card.id}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
                     "Accept": "application/json"
                 },
                 body: JSON.stringify({
-                    player_id: game[assignedPlayer].id,
+                    player_id: assignedPlayer.id,
                     matched: false
                 })
             })
             .then(resp => resp.json())
             .then(card => Card.loadCardsToSummary(card))
             .then(card => {
-                player_list[assignedPlayer].count == 0 ? delete player_list[assignedPlayer] : player_list[assignedPlayer].count -= 1;
+                assignedPlayer.cards.length == 0 ? delete player_list[assignedPlayer] : player_list[assignedPlayer].count -= 1;
                 let newCard = new Card(card.data.id, card.data.attributes.category, card.data.attributes.image, card.data.attributes.matched, card.data.attributes.player.id, card.data.attributes.player.role, card.data.attributes.month);
                 return newCard;
             });
@@ -223,12 +239,12 @@ class Card {
     }
 
     static async clearAllCardsFromBoard() {
-        const roles = ['computer', 'user', 'deck', 'board'];
-        await asyncForEach(roles, async (role) => {
-            document.getElementById(`${role}-container`).innerHTML = ""
-            return role;
+        game.players.forEach(player => player.cards = []);
+        await asyncForEach(game.players, async (player) => {
+            document.getElementById(`${player.role}-container`).innerHTML = ""
+            return player;
         })
-        return roles;
+        return game.players;
     }
 };
 

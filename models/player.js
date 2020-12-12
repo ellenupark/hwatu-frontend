@@ -7,7 +7,7 @@ class Player {
         game.add(this)
     };
 
-    add(card){
+    add(card) {
         this.cards.push(card);
         return card;
     }
