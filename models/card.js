@@ -107,23 +107,10 @@ class Card {
         await Card.clearAllCardsFromBoard();
         let cards = await API.retrieveAllCards();
 
-        let player_list = {
-            user: {
-                count: 7
-            },
-            computer: {
-                count: 7,
-            },
-            deck: {
-                count: 21
-            },
-            board: {
-                count: 9
-            }
-        };
+        debugger
 
         await asyncForEach(cards.data, async (card) => {
-            let assignedPlayer = sample(Object.keys(player_list));
+            let assignedPlayer = sample(game.players);
             let playerCards = await API.retrieveCardsByPlayer(game[assignedPlayer].id);
 
             if (playerCards.filter(c => c.month === card.attributes.month) > 3) {
@@ -152,6 +139,56 @@ class Card {
         })
         return cards;
     }
+
+    // static async dealCards() {
+    //     await Card.clearAllCardsFromBoard();
+    //     let cards = await API.retrieveAllCards();
+
+    //     let player_list = {
+    //         user: {
+    //             count: 7
+    //         },
+    //         computer: {
+    //             count: 7,
+    //         },
+    //         deck: {
+    //             count: 21
+    //         },
+    //         board: {
+    //             count: 9
+    //         }
+    //     };
+
+    //     await asyncForEach(cards.data, async (card) => {
+    //         let assignedPlayer = sample(Object.keys(player_list));
+    //         let playerCards = await API.retrieveCardsByPlayer(game[assignedPlayer].id);
+
+    //         if (playerCards.filter(c => c.month === card.attributes.month) > 3) {
+    //             assignedPlayer = sample(Object.keys(player_list).filter(p => p !== assignedPlayer))
+    //             debugger
+    //         }
+            
+    //         return fetch(`http://localhost:3000/cards/${card.id}`, {
+    //             method: "PATCH",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //                 "Accept": "application/json"
+    //             },
+    //             body: JSON.stringify({
+    //                 player_id: game[assignedPlayer].id,
+    //                 matched: false
+    //             })
+    //         })
+    //         .then(resp => resp.json())
+    //         .then(card => Card.loadCardsToSummary(card))
+    //         .then(card => {
+    //             player_list[assignedPlayer].count == 0 ? delete player_list[assignedPlayer] : player_list[assignedPlayer].count -= 1;
+    //             let newCard = new Card(card.data.id, card.data.attributes.category, card.data.attributes.image, card.data.attributes.matched, card.data.attributes.player.id, card.data.attributes.player.role, card.data.attributes.month);
+    //             return newCard;
+    //         });
+    //     })
+    //     return cards;
+    // }
 
     static loadCardsToSummary(card) {
         const cardMonth = downcaseFirstLetter(card.data.attributes.month);

@@ -56,6 +56,7 @@ class Game {
         let userCards = userContainer.children;
 
         if (userContainer.childElementCount === 0) {
+            debugger
             Game.playUserTurnWithoutCards();
         } else {
             for (let i = 0; i < userCards.length; i++) {
@@ -67,9 +68,7 @@ class Game {
     }
 
     static async playTurnWithoutCards() {
-        
         game.turnCount += 1;
-
         if (game.turnCount === 23) {
             Game.displayWinner();
         } else {
@@ -98,7 +97,6 @@ class Game {
 
         // Highlight card that matches played card month
         const boardPairs = await Game.findBoardPairs()
-        
 
         let flippedCard;
         switch (boardPairs.length) {
@@ -471,17 +469,19 @@ class Game {
         const playAgainButton = document.getElementById('play-again')
         const exitButton = document.getElementById('exit')
 
-        playAgainButton.addEventListener('click', Game.resetGame)
-        exitButton.addEventListener('click', Game.exitGame)
-
         document.getElementById('main-game').classList.add('hidden')
         winnerDiv.classList.remove('hidden')
 
-        Card.dealCards();
+        playAgainButton.addEventListener('click', Game.resetGame)
+        exitButton.addEventListener('click', Game.exitGame)
+
+        document.getElementById('welcome-div').classList.remove('hidden');
     }
 
-    static exitGame() {
-        game.reset();
+    static async exitGame() {
+        game.turnCount = 0;
+        game.name = "";
+        await Card.dealCards();
         loadGame();
 
         document.getElementById('user-pairs').innerHTML = '<h3 id="player-pairs"></h3>'
@@ -494,6 +494,7 @@ class Game {
 
     static async resetGame() {
         game.turnCount = 0;
+        await Card.dealCards();
         game.playGame();
 
         document.getElementById('user-pairs').innerHTML = `<h3 id="player-pairs">${game.name}'s Pairs</h3>`

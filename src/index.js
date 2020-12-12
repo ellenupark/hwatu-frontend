@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
 const prepareGame = async () => {
   await API.loadPlayers();
   await Card.dealCards();
+  document.getElementById('welcome-div').classList.remove('hidden');
   loadGame();
 }
 

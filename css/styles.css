@@ -189,7 +189,9 @@ img {
 /* Board Row */
 
 #board {
-    border: 1px solid red;
+    background-color: #D2B48C;
+    background-size: cover;
+    border: 3px solid #8b5d2e;
     padding: 10px 0px 10px 0px;
 }
 
@@ -197,13 +199,10 @@ img {
 
 #computer-pairs {
     padding-right: 10px;
-    border: 1px solid red;
 }
 
 #user-pairs {
     padding-left: 10px;
-    border: 1px solid red;
-
 }
 
 
