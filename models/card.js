@@ -41,7 +41,7 @@ class Card {
     }
 
     renderCardMatchedSets() {
-        const cardContainer = document.getElementById(`${game.currentPlayer.role}-pairs`);
+        const cardContainer = document.getElementById(`${this.playerRole}-pairs`);
 
         if (cardContainer.getElementsByClassName(`${this.month}-matched`).length > 0) {
             let newCard = document.createElement('img')
@@ -50,7 +50,7 @@ class Card {
             newCard.id = `card-${this.id}`
             newCard.setAttribute('src', this.image);
             
-            document.getElementsByClassName(`${this.month}-matched`)[0].appendChild(newCard);
+            cardContainer.getElementsByClassName(`${this.month}-matched`)[0].appendChild(newCard);
         } else {
             let newSet = document.createElement('div')
             newSet.classList.add(`${this.month}-matched`)
@@ -189,6 +189,7 @@ class Card {
         newCard.dataset.month = card.dataset.month;
         newCard.dataset.category = card.dataset.category;
         newCard.id = card.id;
+        newCard.classList.add('played-card')
         newCard.setAttribute('src', card.src);
         return newCard;
     }

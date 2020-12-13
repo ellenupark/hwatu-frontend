@@ -52,28 +52,25 @@ class Game {
 
     async playGame() {
         
-        this.turnCount += 1;
+        game.turnCount += 1;
         let userCards = userContainer.children;
-
-        if (userContainer.childElementCount === 0) {
-            debugger
-            Game.playUserTurnWithoutCards();
-        } else {
-            for (let i = 0; i < userCards.length; i++) {
-                userCards[i].addEventListener('click', Game.playTurn)
-            }
+        
+        for (let i = 0; i < userCards.length; i++) {
+            userCards[i].addEventListener('click', Game.playTurn)
         }
-
         return this.turnCount;
-    }
+    };
 
     static async playTurnWithoutCards() {
+        
         game.turnCount += 1;
+        
         if (game.turnCount === 23) {
             Game.displayWinner();
         } else {
-            let flippedCard = await Game.flipCardFromDeck();
+            const flippedCard = await Game.flipCardFromDeck(); 
             const finalPairsOnBoard = await Game.checkBoardForPairedSets()
+
             await timeout(1000);
             
             const finalSets = await Game.findSets(finalPairsOnBoard)
@@ -94,9 +91,7 @@ class Game {
         if (game.currentPlayer.role === 'user') {
             const playedCard = await Game.moveCardToBoard();
         }
-
-        // Highlight card that matches played card month
-        const boardPairs = await Game.findBoardPairs()
+        const boardPairs = await Game.findBoardPairs();
 
         let flippedCard;
         switch (boardPairs.length) {
@@ -136,21 +131,23 @@ class Game {
         
         const finalSets = await Game.findSets(finalPairsOnBoard)
         
+        Game.playNextTurn();
+    };
 
+    static playNextTurn() {
         if (game.currentPlayer.role === 'user' && computerContainer.childElementCount !== 0) {
-            Game.playComputerTurn()
+            Game.playComputerTurn();
         } else if (game.currentPlayer.role === 'user' && computerContainer.childElementCount === 0) {
             Game.playTurnWithoutCards();
         } else if (game.currentPlayer.role === 'computer' && userContainer.childElementCount !== 0) {
-            game.playGame()
+            game.playGame();
         } else {
             Game.playTurnWithoutCards();
         }
-    };
+    }
 
     static async findBoardPairs() {
-        
-        const playedCard = playedCardDiv.firstElementChild;
+        const playedCard = document.getElementsByClassName('played-card')[0];
         const playedCardMonth = playedCard.dataset.month;
 
         let cardsOnBoard = Array.from(boardContainer.children);
@@ -232,23 +229,20 @@ class Game {
     // GAME MECHANICS
     
     static async flipCardFromDeck() {
-
         const topCardOfDeck = await API.fetchRandomCardFromDeck();
         const flippedCard = await API.updateCardPlayerToBoard(topCardOfDeck);
-
         await timeout(1000);
         const renderFlippedCard = new Card(flippedCard.data.id, flippedCard.data.attributes.category, flippedCard.data.attributes.image, flippedCard.data.attributes.matched, flippedCard.data.attributes.player.id, flippedCard.data.attributes.player.role, flippedCard.data.attributes.month)
 
         if (game.turnCount === 22) {
             deckContainer.firstElementChild.remove();
-        }
-
+        };
         return renderFlippedCard;
     };
 
     static async checkBoardForPairedSets() {
         let cards = Game.retrieveAllCardsInPlay();
-        let pairs = {}
+        let pairs = {};
 
         for (let i = 0; i < cards.length; i++) {
             pairs[cards[i].dataset.month] ||= [];
@@ -258,18 +252,17 @@ class Game {
     }
 
     static async findSets(pairs) {
-        let playedCard = playedCardDiv.firstElementChild;
+        let playedCard = playedCardDiv.firstElementChild
         let flippedCard = boardContainer.lastElementChild;
         const months = Object.keys(pairs);
 
         await asyncForEach(months, async (month) => {
+            // If played card does not match any other cards on board
             if (pairs[month].length === 1 && pairs[month].includes(playedCard)) {
-                
+            
                 let playedCardMovedToBoard = await Game.movePlayedCardToBoard();
             } else if (pairs[month].length === 2) {
-                
-                if (pairs[month].includes(playedCard) || pairs[month].includes(flippedCard)) {
-                    
+                if (pairs[month].includes(playedCard) || pairs[month].includes(flippedCard)) {   
                     pairs[month].forEach(c => c.classList.remove('highlight'));
                     let collectedCards = await Game.collectPairsFromBoard(pairs[month]);
                 }
@@ -296,10 +289,10 @@ class Game {
 
     static retrieveAllCardsInPlay() {
         let cards = [];
-        let playedCard = playedCardDiv.children[0];
+        let playedCard = document.getElementsByClassName('played-card')[0];
         let boardCards = boardContainer.children;
 
-        if (playedCardDiv.children[0] !== undefined) {
+        if (playedCard) {
             cards.push(playedCard);
             for (let i = 0; i < boardCards.length; i++) {
                 cards.push(boardCards[i])
@@ -307,12 +300,12 @@ class Game {
             return cards;
         } else {
             return boardCards;
-        }
+        };
     };
 
     // When played card does not make any pairs
     static async movePlayedCardToBoard() {
-        let playedCard = playedCardDiv.firstElementChild;
+        let playedCard = playedCardDiv.firstElementChild
 
         return fetch(`http://localhost:3000/cards/${playedCard.id.split('-')[1]}`, {
             method: "PATCH",
@@ -333,7 +326,7 @@ class Game {
     };
 
     static async collectPairsFromBoard(cards) {
-        let updatedCards = []
+        let updatedCards = [];
 
         await asyncForEach(cards, async (card) => {
             let updatedCard = await Game.updateCardDetails(card);
@@ -344,7 +337,7 @@ class Game {
     }
 
     static async updateCardDetails(card) {
-        return fetch(`http://localhost:3000/cards/${card.id.split('-')[1]}`, {
+        let updatedCard = await fetch(`http://localhost:3000/cards/${card.id.split('-')[1]}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -356,20 +349,22 @@ class Game {
             })
         })
         .then(resp => resp.json())
-        .then(updatedCard => Game.displayCardInPairsDiv(card, updatedCard))
-    }
+        await Game.displayCardInPairsDiv(card, updatedCard);
+        return updatedCard;
+    };
 
     static async displayCardInPairsDiv(oldCard, newCard) {
         // await timeout(1000);
         oldCard.remove()
+
         new Card(newCard.data.id, newCard.data.attributes.category, newCard.data.attributes.image, newCard.data.attributes.matched, newCard.data.attributes.player.id, newCard.data.attributes.player.role, newCard.data.attributes.month)
-        
         return newCard;
     }
 
     static async playComputerTurn() {
         
         await timeout(1000);
+        
         game.turnCount += 1;
 
         const possibleBoardPairs = await Game.findPossibleComputerPairs();
@@ -378,28 +373,22 @@ class Game {
     }
 
     static async findPossibleComputerPairs() {
-        let myCards = Array.from(computerContainer.children);
-        let cards = Array.from(boardContainer.children);
-
-        if (myCards.length === 0) {
-            return;
-        }
+        const allCards = [...Array.from(computerContainer.children), ...Array.from(boardContainer.children)];
 
         let pairs = {}
 
-        for (let i = 0; i < pairs.length; i++) {
-            pairs[cards[i].dataset.month] ||= [];
-            pairs[cards[i].dataset.month].push(cards[i])
+        for (let i = 0; i < allCards.length; i++) {
+            pairs[allCards[i].dataset.month] ||= [];
+            pairs[allCards[i].dataset.month].push(allCards[i])
         }
-
         return pairs;
     }
 
     static async pickComputerCardToPlay(pairs) {
-        const myCards = Array.from(computerContainer.children);
+        const computerCards = Array.from(computerContainer.children);
         const months = Object.keys(pairs);
 
-        let cardToPlay = await Game.findCardToPlay(myCards, months, pairs);
+        let cardToPlay = await Game.findCardToPlay(computerCards, months, pairs);
         let playedCard = await Game.playComputerCard(cardToPlay);
 
         return playedCard;
@@ -429,6 +418,7 @@ class Game {
         playedCard.setAttribute('src', `${card.dataset.url}`)
         playedCard.dataset.month = card.dataset.month;
         playedCard.dataset.category = card.dataset.category;
+        playedCard.classList.add('played-card');
         playedCard.id = card.id;
 
         await timeout(1000);
