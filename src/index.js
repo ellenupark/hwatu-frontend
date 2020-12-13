@@ -23,6 +23,7 @@ function loadGame() {
 
     const formResults = getInfo(event);
     let url = gameURL;
+    
     let options = {
       method: 'POST',
       headers: {
