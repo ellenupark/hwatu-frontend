@@ -429,6 +429,7 @@ class Game {
     }
 
     static async calculateWinner() {
+        let winner;
         let userCards = await Game.retrieveAllPairedCardsFromPlayer(game.user)
         let computerCards = await Game.retrieveAllPairedCardsFromPlayer(game.computer)
 
@@ -444,13 +445,13 @@ class Game {
         computerPoints += Game.calculateAnimalCardPoints(computerCards)
         computerPoints += Game.calculateRibbonCardPoints(computerCards)
         computerPoints += Game.calculateJunkCardPoints(computerCards)
-
-        userPoints > computerPoints ? game.user : game.computer;
+        
+        userPoints > computerPoints ? winner = game.user : winner = game.computer;
+        return winner;
     }
 
     static async displayWinner() {
         const winner = await Game.calculateWinner();
-
         const winnerDiv = document.getElementById('winner');
         const displayName = document.getElementById('game-winner')
 
@@ -549,7 +550,7 @@ class Game {
         let ribbonCards = cards.filter(card => card.dataset.category === "ribbon")
 
         if (ribbonCards.length > 5) {
-            points += 5;
+            points += 1;
             let additionalPoints = ribbonCards.length - 5;
             points += additionalPoints;
         } else if (ribbonCards.length === 5) {
@@ -583,8 +584,6 @@ class Game {
         }
         return points;
     }
-
-
 };
 
 let game = new Game();
