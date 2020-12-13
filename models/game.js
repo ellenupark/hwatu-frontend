@@ -472,7 +472,6 @@ class Game {
         game.turnCount = 0;
         game.name = "";
         await Card.dealCards();
-        loadGame();
 
         document.getElementById('user-pairs').innerHTML = '<h3 id="player-pairs"></h3>'
         document.getElementById('computer-pairs').innerHTML = '<h3>Computer Pairs</h3>'
@@ -480,6 +479,7 @@ class Game {
         document.getElementById('main-game').classList.add('hidden')
         document.getElementById('winner').classList.add('hidden')
         document.getElementById('welcome').classList.remove('hidden')
+        document.getElementById('nav-bar').classList.add('hidden');
     }
 
     static async resetGame() {
