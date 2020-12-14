@@ -23,7 +23,7 @@ function loadGame() {
 
     const formResults = getInfo(event);
     let url = gameURL;
-    
+
     let options = {
       method: 'POST',
       headers: {
@@ -62,6 +62,20 @@ function revealBoard() {
   navBar.classList.remove('hidden')
 };
 
-$('#myModal').on('shown.bs.modal', function () {
-  $('#myInput').trigger('focus')
-})
+function sample(array) {
+  return array[Math.floor ( Math.random() * array.length )]
+}
+
+function timeout(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
+
+function downcaseFirstLetter(string) {
+  return string.charAt(0).toLowerCase() + string.slice(1);
+}

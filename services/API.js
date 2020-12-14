@@ -44,6 +44,21 @@ class API {
         .then(resp => resp.json())
     }
 
+    static async updateCardPlayer(card, player) {
+        return fetch(`http://localhost:3000/cards/${card.id}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    player_id: player.id,
+                    matched: false
+                })
+            })
+            .then(resp => resp.json())
+    };
+
     static async fetchRandomCardFromDeck() {
         return fetch(`http://localhost:3000/players/${game.deck.id}/cards`)
         .then(resp => resp.json())

@@ -156,8 +156,6 @@ class Game {
         return matchedCards
     }
 
-    // --------- USER ---------
-
     static async moveCardToBoard() {
         let playedCard = event.target;
         let playedCardHtml = Card.renderCardHtml(playedCard);
@@ -177,7 +175,7 @@ class Game {
         const notice = document.getElementById('instruction-display');
         notice.innerHTML += `
         <div class="rule-notice">
-            <p>Select Card to Pair With!</p>
+            <p>Select Card to Pair With</p>
         </div>
         `
         return notice
@@ -199,11 +197,11 @@ class Game {
             card.addEventListener('click', () => {
                 Game.selectCardToPairWith()
                 .then(resp => next = true)
-            })
-        })
+            });
+        });
 
         return pairs;
-    }
+    };
 
     static async selectCardToPairWith() {
         const selectedCard = event.target
@@ -225,8 +223,6 @@ class Game {
         
         return selectedCard;
     }
-
-    // GAME MECHANICS
     
     static async flipCardFromDeck() {
         const topCardOfDeck = await API.fetchRandomCardFromDeck();
@@ -249,7 +245,7 @@ class Game {
             pairs[cards[i].dataset.month].push(cards[i])
         }
        return pairs;
-    }
+    };
 
     static async findSets(pairs) {
         let playedCard = playedCardDiv.firstElementChild
@@ -281,11 +277,11 @@ class Game {
                     pairs[month].forEach(c => c.classList.remove('highlight'));
                     let collectedCards = await Game.collectPairsFromBoard(pairs[month]);
                 }
-            }
+            };
 
-        })
+        });
         return pairs;
-    }
+    };
 
     static retrieveAllCardsInPlay() {
         let cards = [];
@@ -427,7 +423,8 @@ class Game {
         
         return playedCard;
     }
-
+    
+    // END GAME MECHANICS
     static async calculateWinner() {
         let winner;
         let userCards = await Game.retrieveAllPairedCardsFromPlayer(game.user)
@@ -587,17 +584,3 @@ class Game {
 };
 
 let game = new Game();
-
-function sample(array) {
-    return array[Math.floor ( Math.random() * array.length )]
-}
-
-function timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-async function asyncForEach(array, callback) {
-    for (let index = 0; index < array.length; index++) {
-      await callback(array[index], index, array);
-    }
-}

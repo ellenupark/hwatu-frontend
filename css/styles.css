@@ -189,10 +189,11 @@ img {
 /* Board Row */
 
 #board {
-    background-color: #D2B48C;
-    background-size: cover;
-    border: 3px solid #8b5d2e;
-    padding: 10px 0px 10px 0px;
+  background-color: #D2B48C;
+  background-size: cover;
+  border: 3px solid #8b5d2e;
+  padding: 10px 0px 10px 0px;
+  min-height: 250px;
 }
 
 /* Paired Sets */

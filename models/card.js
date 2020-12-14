@@ -133,30 +133,20 @@ class Card {
         await asyncForEach(cards.data, async (card) => {
             let assignedPlayer = sample(playerPool);
 
+            // Prevents 4 of same card month from being dealt to user/board/computer
             if (assignedPlayer.cards.filter(c => c.month === card.attributes.month).length === 3 && assignedPlayer !== game.deck) {
                 debugger
                 assignedPlayer = sample(playerPool.filter(p => p !== assignedPlayer));
             };
             
-            await fetch(`http://localhost:3000/cards/${card.id}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"
-                },
-                body: JSON.stringify({
-                    player_id: assignedPlayer.id,
-                    matched: false
-                })
-            })
-            .then(resp => resp.json())
-            .then(card => Card.loadCardsToSummary(card))
-            .then(card => {
-                if (Card.checkPlayerForFullHand(assignedPlayer)) {
-                    playerPool.splice(playerPool.indexOf(assignedPlayer), 1);
-                };
-                return new Card(card.data.id, card.data.attributes.category, card.data.attributes.image, card.data.attributes.matched, card.data.attributes.player.id, card.data.attributes.player.role, card.data.attributes.month);
-            })
+            let updatedCard = await API.updateCardPlayer(card, assignedPlayer);
+            // await (Card.loadCardsToSummary(updatedCard));
+
+            if (Card.checkPlayerForFullHand(assignedPlayer)) {
+                playerPool.splice(playerPool.indexOf(assignedPlayer), 1);
+            };
+            
+            return new Card(updatedCard.data.id, updatedCard.data.attributes.category, updatedCard.data.attributes.image, updatedCard.data.attributes.matched, updatedCard.data.attributes.player.id, updatedCard.data.attributes.player.role, updatedCard.data.attributes.month);
         })
         return cards;
     };
@@ -203,8 +193,3 @@ class Card {
         return game.players;
     }
 };
-
-
-function downcaseFirstLetter(string) {
-    return string.charAt(0).toLowerCase() + string.slice(1);
-}
