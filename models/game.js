@@ -430,41 +430,84 @@ class Game {
         let userCards = await Game.retrieveAllPairedCardsFromPlayer(game.user)
         let computerCards = await Game.retrieveAllPairedCardsFromPlayer(game.computer)
 
-        let userPoints = 0;
-        let computerPoints = 0;
+        let userPoints = {
+            player: game.user,
+            bright: 0,
+            animal: 0,
+            ribbon: 0,
+            junk: 0,
+            total: 0
+        };
 
-        userPoints += Game.calculateBrightCardPoints(userCards)
-        userPoints += Game.calculateAnimalCardPoints(userCards)
-        userPoints += Game.calculateRibbonCardPoints(userCards)
-        userPoints += Game.calculateJunkCardPoints(userCards)
+        let computerPoints = {
+            player: game.computer,
+            bright: 0,
+            animal: 0,
+            ribbon: 0,
+            junk: 0,
+            total: 0
+        };
 
-        computerPoints += Game.calculateBrightCardPoints(computerCards)
-        computerPoints += Game.calculateAnimalCardPoints(computerCards)
-        computerPoints += Game.calculateRibbonCardPoints(computerCards)
-        computerPoints += Game.calculateJunkCardPoints(computerCards)
+        userPoints.bright += Game.calculateBrightCardPoints(userCards);
+        userPoints.animal += Game.calculateAnimalCardPoints(userCards);
+        userPoints.ribbon += Game.calculateRibbonCardPoints(userCards);
+        userPoints.junk += Game.calculateJunkCardPoints(userCards);
+        userPoints.total += userPoints.bright + userPoints.animal + userPoints.ribbon + userPoints.junk;
+
+        computerPoints.bright += Game.calculateBrightCardPoints(computerCards);
+        computerPoints.animal += Game.calculateAnimalCardPoints(computerCards);
+        computerPoints.ribbon += Game.calculateRibbonCardPoints(computerCards);
+        computerPoints.junk += Game.calculateJunkCardPoints(computerCards);
+        computerPoints.total += computerPoints.bright + computerPoints.animal + computerPoints.ribbon + computerPoints.junk;
         
-        userPoints > computerPoints ? winner = game.user : winner = game.computer;
+        userPoints > computerPoints ? winner = userPoints : winner = computerPoints;
         return winner;
     }
 
     static async displayWinner() {
         const winner = await Game.calculateWinner();
-        const winnerDiv = document.getElementById('winner');
-        const displayName = document.getElementById('game-winner')
+        const parentDiv = document.getElementById('winner');
+        const displayDiv = document.getElementById('display-winner');
+        const displayName = document.getElementById('game-winner');
 
-        winner === game.user ? displayName.innerText = `${game.name} Won!` : displayName.innerText = 'You Lost! Better Luck Next Time!'
+        winner.player === game.user ? displayName.innerText = `${game.name} Won!` : displayName.innerText = 'You Lost! Better Luck Next Time!';
+        displayDiv.innerHTML += Game.renderUserPointTotal(winner);
 
         const playAgainButton = document.getElementById('play-again')
         const exitButton = document.getElementById('exit')
 
         document.getElementById('main-game').classList.add('hidden')
-        winnerDiv.classList.remove('hidden')
+        parentDiv.classList.remove('hidden')
 
         playAgainButton.addEventListener('click', Game.resetGame)
         exitButton.addEventListener('click', Game.exitGame)
 
         document.getElementById('welcome-div').classList.remove('hidden');
-    }
+    };
+
+    static renderUserPointTotal(winner) {
+        return `
+            <div class="container point-display">
+                <h4>${game.name}'s Total Points: ${winner.total}</h4>
+                <div class="row">
+                    <div class="col"> 
+                        <p>Bright Points: ${winner.bright}</p>
+                    </div>
+                    <div class="col"> 
+                        <p>Animal Points: ${winner.animal}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col"> 
+                        <p>Ribbon Points: ${winner.ribbon}</p>
+                    </div>
+                    <div class="col"> 
+                        <p>Junk Points: ${winner.junk}</p>
+                    </div>
+                </div>
+            </div>
+        `
+    };
 
     static async exitGame() {
         game.turnCount = 0;
@@ -473,6 +516,7 @@ class Game {
 
         document.getElementById('user-pairs').innerHTML = '<h3 id="player-pairs"></h3>'
         document.getElementById('computer-pairs').innerHTML = '<h3>Computer Pairs</h3>'
+        document.getElementById('display-winner').lastElementChild.remove();
 
         document.getElementById('main-game').classList.add('hidden')
         document.getElementById('winner').classList.add('hidden')
@@ -487,6 +531,7 @@ class Game {
 
         document.getElementById('user-pairs').innerHTML = `<h3 id="player-pairs">${game.name}'s Pairs</h3>`
         document.getElementById('computer-pairs').innerHTML = '<h3>Computer Pairs</h3>'
+        document.getElementById('display-winner').lastElementChild.remove();
 
         document.getElementById('main-game').classList.remove('hidden')
         document.getElementById('winner').classList.add('hidden')

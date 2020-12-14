@@ -139,7 +139,6 @@ class Card {
             };
             
             let updatedCard = await API.updateCardPlayer(card, assignedPlayer);
-            // await (Card.loadCardsToSummary(updatedCard));
 
             // Check if assigned player hand is full
             if (Card.checkPlayerForFullHand(assignedPlayer)) {
