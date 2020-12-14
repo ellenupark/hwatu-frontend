@@ -295,18 +295,8 @@ class Game {
     static async movePlayedCardToBoard() {
         let playedCard = playedCardDiv.firstElementChild
 
-        return fetch(`http://localhost:3000/cards/${playedCard.id.split('-')[1]}`, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            body: JSON.stringify({
-                player_id: game.board.id
-            })
-        })
-        .then(resp => resp.json())
-        .then(function(card) {
+        return API.updateCardPlayerToBoard(playedCard.id.split('-')[1])
+        .then(card => {
             playedCard.remove();
             new Card(card.data.id, card.data.attributes.category, card.data.attributes.image, card.data.attributes.matched, card.data.attributes.player.id, card.data.attributes.player.role, card.data.attributes.month)
             return card
