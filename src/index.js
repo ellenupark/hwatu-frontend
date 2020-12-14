@@ -13,9 +13,10 @@ document.addEventListener("DOMContentLoaded", function() {
 const prepareGame = async () => {
   await API.loadPlayers();
   await Card.dealCards();
+  Card.loadCardsToSummary();
   document.getElementById('welcome-div').classList.remove('hidden');
   loadGame();
-}
+};
 
 function loadGame() {
   gameForm.addEventListener("submit", function(event) {

@@ -82,7 +82,7 @@ class Card {
 
     static createCardSummaryHtml(card) {
         let cardHtml = document.createElement('img');
-        cardHtml.setAttribute('src', card.data.attributes.image);
+        cardHtml.setAttribute('src', card.attributes.image);
         cardHtml.style.maxWidth = "45px";
         return cardHtml;
     }
@@ -121,7 +121,6 @@ class Card {
                 player.cards.length === 9 ? full = true : full = false;
                 break;
         };
-
         return full;
     };
 
@@ -142,6 +141,7 @@ class Card {
             let updatedCard = await API.updateCardPlayer(card, assignedPlayer);
             // await (Card.loadCardsToSummary(updatedCard));
 
+            // Check if assigned player hand is full
             if (Card.checkPlayerForFullHand(assignedPlayer)) {
                 playerPool.splice(playerPool.indexOf(assignedPlayer), 1);
             };
@@ -151,19 +151,23 @@ class Card {
         return cards;
     };
 
-    static loadCardsToSummary(card) {
-        const cardMonth = downcaseFirstLetter(card.data.attributes.month);
-        const parentMonthDiv = document.getElementById(cardMonth);
-        const cardMonthImg = Card.createCardSummaryHtml(card)
-        parentMonthDiv.appendChild(cardMonthImg)
+    static async loadCardsToSummary() {
+
+        const cards = await API.retrieveAllCards();
+        asyncForEach(cards.data, async function(card) {
+            const cardMonth = downcaseFirstLetter(card.attributes.month);
+            const parentMonthDiv = document.getElementById(cardMonth);
+            const cardMonthImg = Card.createCardSummaryHtml(card)
+            parentMonthDiv.appendChild(cardMonthImg)
     
-        const cardCategory = card.data.attributes.category;
-        const parentCategoryDiv =  document.getElementsByClassName(cardCategory)[0];
-        const cardCategoryImg = Card.createCardSummaryHtml(card)
-        parentCategoryDiv.appendChild(cardCategoryImg)
-        
-        return card;
-    }
+            const cardCategory = card.attributes.category;
+            const parentCategoryDiv =  document.getElementsByClassName(cardCategory)[0];
+            const cardCategoryImg = Card.createCardSummaryHtml(card)
+            parentCategoryDiv.appendChild(cardCategoryImg)
+            return card;
+        });
+        return cards;
+    };
 
     static renderCardHtmlFromDatabase(card) {
         let newCard = document.createElement('img');
