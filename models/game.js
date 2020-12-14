@@ -21,24 +21,28 @@ class Game {
         this.name = "";
         this.points = 0;
         this.id = 0;
-    }
+    };
 
     add(player){
         this.players.push(player);
         return player;
-    }
+    };
 
     get computer() {
-        return this.players.find(x => x.role === "computer")
-    }
+        return this.players.find(player => player.role === "computer")
+    };
 
     get user() {
-        return this.players.find(x => x.role === "user")
-    }
+        return this.players.find(player => player.role === "user")
+    };
 
     get board() {
-        return this.players.find(x => x.role === "board")
-    }
+        return this.players.find(player => player.role === "board")
+    };
+
+    get deck() {
+        return this.players.find(player => player.role === "deck")
+    };
 
     get currentPlayer() {
         if (this.turnCount % 2 === 0) {
@@ -46,12 +50,14 @@ class Game {
         } else {
             return this.user;
         }
-    }
+    };
 
     // --------- GAME MECHANICS ---------
 
     async playGame() {
-        
+        const notice = document.getElementById('opponent-display');
+        notice.innerHTML = "";
+
         game.turnCount += 1;
         let userCards = userContainer.children;
         
@@ -60,32 +66,6 @@ class Game {
         }
         return this.turnCount;
     };
-
-    static async playTurnWithoutCards() {
-        
-        game.turnCount += 1;
-        
-        if (game.turnCount === 23) {
-            Game.displayWinner();
-        } else {
-            const flippedCard = await Game.flipCardFromDeck(); 
-            const finalPairsOnBoard = await Game.checkBoardForPairedSets()
-
-            await timeout(1000);
-            
-            const finalSets = await Game.findSets(finalPairsOnBoard)
-
-            if (game.currentPlayer.role === 'user' && computerContainer.childElementCount !== 0) {
-                Game.playComputerTurn()
-            } else if (game.currentPlayer.role === 'user' && computerContainer.childElementCount === 0) {
-                Game.playTurnWithoutCards();
-            } else if (game.currentPlayer.role === 'computer' && userContainer.childElementCount !== 0) {
-                game.playGame()
-            } else {
-                Game.playTurnWithoutCards();
-            }
-        }
-    }
     
     static async playTurn() {
         if (game.currentPlayer.role === 'user') {
@@ -105,7 +85,7 @@ class Game {
             case 2:
                 if (game.currentPlayer.role === 'user') {
                     boardPairs.forEach(card => card.classList.add('highlight'));
-                    let instructions = await Game.displayPickCardInstructions();
+                    Game.displayPickCardInstructions();
                     let finalPickedCard = await Game.pickCardToPair();
                     let canContinue = await Game.awaitUserInput()
                     flippedCard = await Game.flipCardFromDeck();
@@ -170,12 +150,29 @@ class Game {
         const notice = document.getElementById('instruction-display');
         notice.innerHTML += `
         <div class="rule-notice">
-            <p>Select Card to Pair With</p>
+            <h5>Select Card to Pair With</h5>
         </div>
         `
         return notice;
     };
 
+    static displayFlipCardFromDeckInstructions() {
+        const notice = document.getElementById('instruction-display');
+        notice.innerHTML += `
+        <div class="flip-notice">
+            <h5>Flip Card</h5>
+        </div>
+        `
+    };
+
+    static displayOpponentTurn() {
+        const notice = document.getElementById('opponent-display');
+        notice.innerHTML += `
+        <div class="opponent-notice">
+            <h5>Opponent's Turn</h5>
+        </div>
+        `
+    };
     
     static async awaitUserInput() {
         const timeout = async ms => new Promise(res => setTimeout(res, ms));
@@ -219,6 +216,13 @@ class Game {
     static async flipCardFromDeck() {
         const topCardOfDeck = await API.fetchRandomCardFromDeck();
         const flippedCard = await API.updateCardPlayerToBoard(topCardOfDeck.data.id);
+
+        if (game.currentPlayer === game.user) {
+            Game.displayFlipCardFromDeckInstructions();
+            document.getElementById('card-deck').classList.add('highlight-deck');
+            document.getElementById('card-deck').addEventListener('click', Game.userFlipCardFromDeck);
+            await Game.awaitUserInput();
+        }
         await timeout(1000);
         const renderFlippedCard = new Card(flippedCard.data.id, flippedCard.data.attributes.category, flippedCard.data.attributes.image, flippedCard.data.attributes.matched, flippedCard.data.attributes.player.id, flippedCard.data.attributes.player.role, flippedCard.data.attributes.month)
 
@@ -227,6 +231,25 @@ class Game {
         };
         return renderFlippedCard;
     };
+
+    static userFlipCardFromDeck() {
+        document.getElementById('card-deck').classList.remove('highlight-deck');
+        const notice = document.getElementById('instruction-display');
+        notice.innerHTML = "";
+        next = true;
+    };
+
+    // static async flipCardFromDeck() {
+    //     const topCardOfDeck = await API.fetchRandomCardFromDeck();
+    //     const flippedCard = await API.updateCardPlayerToBoard(topCardOfDeck.data.id);
+    //     await timeout(1000);
+    //     const renderFlippedCard = new Card(flippedCard.data.id, flippedCard.data.attributes.category, flippedCard.data.attributes.image, flippedCard.data.attributes.matched, flippedCard.data.attributes.player.id, flippedCard.data.attributes.player.role, flippedCard.data.attributes.month)
+
+    //     if (game.turnCount === 22) {
+    //         deckContainer.firstElementChild.remove();
+    //     };
+    //     return renderFlippedCard;
+    // };
 
     static async checkBoardForPairedSets() {
         let cards = Game.retrieveAllCardsInPlay();
@@ -298,8 +321,8 @@ class Game {
         return API.updateCardPlayerToBoard(playedCard.id.split('-')[1])
         .then(card => {
             playedCard.remove();
-            new Card(card.data.id, card.data.attributes.category, card.data.attributes.image, card.data.attributes.matched, card.data.attributes.player.id, card.data.attributes.player.role, card.data.attributes.month)
-            return card
+            new Card(card.data.id, card.data.attributes.category, card.data.attributes.image, card.data.attributes.matched, card.data.attributes.player.id, card.data.attributes.player.role, card.data.attributes.month);
+            return card;
         })
     };
 
@@ -332,7 +355,6 @@ class Game {
     };
 
     static async displayCardInPairsDiv(oldCard, newCard) {
-        // await timeout(1000);
         oldCard.remove()
 
         new Card(newCard.data.id, newCard.data.attributes.category, newCard.data.attributes.image, newCard.data.attributes.matched, newCard.data.attributes.player.id, newCard.data.attributes.player.role, newCard.data.attributes.month)
@@ -340,7 +362,7 @@ class Game {
     }
 
     static async playComputerTurn() {
-        
+        Game.displayOpponentTurn();
         await timeout(1000);
         
         game.turnCount += 1;
@@ -404,7 +426,41 @@ class Game {
         playedCardDiv.appendChild(playedCard)
         
         return playedCard;
-    }
+    };
+
+    static async playTurnWithoutCards() {
+        
+        game.turnCount += 1;
+        
+        if (game.turnCount === 23) {
+            const notice = document.getElementById('opponent-display');
+            notice.innerHTML = "";
+            Game.displayWinner();
+        } else {
+            if (game.currentPlayer === game.computer) {
+                Game.displayOpponentTurn();
+            } else {
+                const notice = document.getElementById('opponent-display');
+                notice.innerHTML = "";
+            }
+            const flippedCard = await Game.flipCardFromDeck(); 
+            const finalPairsOnBoard = await Game.checkBoardForPairedSets()
+
+            await timeout(1000);
+            
+            const finalSets = await Game.findSets(finalPairsOnBoard)
+
+            if (game.currentPlayer.role === 'user' && computerContainer.childElementCount !== 0) {
+                Game.playComputerTurn()
+            } else if (game.currentPlayer.role === 'user' && computerContainer.childElementCount === 0) {
+                Game.playTurnWithoutCards();
+            } else if (game.currentPlayer.role === 'computer' && userContainer.childElementCount !== 0) {
+                game.playGame()
+            } else {
+                Game.playTurnWithoutCards();
+            }
+        }
+    };
     
     // END GAME MECHANICS
     static async calculateWinner() {
@@ -435,7 +491,6 @@ class Game {
         userPoints.ribbon += Game.calculateRibbonCardPoints(userCards);
         userPoints.junk += Game.calculateJunkCardPoints(userCards);
         userPoints.total += userPoints.bright + userPoints.animal + userPoints.ribbon + userPoints.junk;
-        game.points = userPoints.total;
 
         computerPoints.bright += Game.calculateBrightCardPoints(computerCards);
         computerPoints.animal += Game.calculateAnimalCardPoints(computerCards);
@@ -447,12 +502,24 @@ class Game {
         return winner;
     }
 
+    static async retrieveAllPairedCardsFromPlayer(player) {
+        const playerSets = Array.from(document.getElementById(`${player.role}-pairs`).children);
+        playerSets.shift();
+
+        let pairedCards = [];
+
+        playerSets.forEach(function(month) {
+            Array.from(month.children).forEach(card => pairedCards.push(card))
+        })
+        return pairedCards;
+    };
+
     static async displayWinner() {
         const winner = await Game.calculateWinner();
+        game.points = userPoints.total;
         await API.updateGamePointTotal();
 
         const parentDiv = document.getElementById('winner');
-        const displayDiv = document.getElementById('display-winner');
         const displayName = document.getElementById('game-winner');
 
         // Render who won
@@ -513,18 +580,31 @@ class Game {
         `
     };
 
+    static resetWinnerDisplay() {
+        document.getElementById('winner').innerHTML = `
+            <div class="row">
+                <div class="col-sm-12 my-auto" id="display-winner">
+                    <h3 id="game-winner"></h3>
+                    <button type="submit" id="play-again" class="btn btn-primary mb-2">Play Again?</button>
+                    <button type="submit" id="exit" class="btn btn-secondary mb-2">Exit</button>
+                </div>
+            </div>
+        `        
+    };
+
     static async exitGame() {
         game.reset();
         await Card.dealCards();
 
-        document.getElementById('user-pairs').innerHTML = '<h3 id="player-pairs"></h3>'
-        document.getElementById('computer-pairs').innerHTML = `<h3>Opponent's Pairs</h3>`
+        userPairs.innerHTML = '<h3 id="player-pairs"></h3>'
+        computerPairs.innerHTML = `<h3>Opponent's Pairs</h3>`
         document.getElementById('point-display').remove();
 
         document.getElementById('main-game').classList.add('hidden')
         document.getElementById('winner').classList.add('hidden')
         document.getElementById('welcome').classList.remove('hidden')
         document.getElementById('nav-bar').classList.add('hidden');
+        Game.resetWinnerDisplay();
     }
 
     static async resetGame() {
@@ -534,25 +614,14 @@ class Game {
         await Card.dealCards();
         game.playGame();
 
-        document.getElementById('player-pairs').innerText = `${game.name}'s Pairs`;
+        userPairs.innerHTML = `<h3 id="player-pairs">${game.name}'s Pairs</h3>`
         computerPairs.innerHTML = `<h3>Opponent's Pairs</h3>`;
         document.getElementById('display-winner').lastElementChild.remove();
 
         document.getElementById('main-game').classList.remove('hidden')
         document.getElementById('winner').classList.add('hidden')
+        Game.resetWinnerDisplay();
     }
-
-    static async retrieveAllPairedCardsFromPlayer(player) {
-        const playerSets = Array.from(document.getElementById(`${player.role}-pairs`).children);
-        playerSets.shift();
-
-        let pairedCards = [];
-
-        playerSets.forEach(function(month) {
-            Array.from(month.children).forEach(card => pairedCards.push(card))
-        })
-        return pairedCards;
-    };
 
     static calculateBrightCardPoints(cards) {
         let points = 0;

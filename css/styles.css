@@ -153,7 +153,7 @@ form {
 }
 
 img {
-    width: 60px;
+    width: 50px;
     padding: 2px;
 }
 
@@ -173,12 +173,6 @@ img {
 .paired {
     padding: 0px 25px 0px 25px;
     min-height: 200px;
-
-    /* border: 1px solid black; */
-}
-
-.highlight {
-    border: 3px solid yellow;
 }
 
 .narrow-width {
@@ -193,7 +187,7 @@ img {
   background-size: cover;
   border: 3px solid #8b5d2e;
   padding: 10px 0px 10px 0px;
-  min-height: 250px;
+  min-height: 200px;
 }
 
 /* Paired Sets */
@@ -219,22 +213,46 @@ img {
 
 /* Instruction Notification */
 .rule-notice {
-    background-color: lightpink;
-    border: 2px solid grey;
-    padding: 5px;
-    border-radius: 20px;
+  background-color: lightpink;
+  border: 2px solid grey;
+  padding: 5px;
+  border-radius: 15px;
 }
+
+.flip-notice {
+  background-color: lightgreen;
+  border: 2px solid grey;
+  padding: 5px;
+  border-radius: 15px;
+}
+
+.highlight {
+  border: 3px solid yellow;
+}
+
+.highlight-deck {
+  border: 3px solid lightgreen;
+}
+
+.opponent-notice {
+  background-color: lightyellow;
+  border: 2px solid grey;
+  padding: 5px;
+  border-radius: 15px;
+}
+
+/* Board Format */
 
 .maintain-height {
     vertical-align: middle;
-    min-height: 150px;
-}
-
-#winner {
-    height: 100vh;
+    min-height: 100px;
 }
 
 /* Winner Display (End Game) */
+
+#winner {
+  height: 100vh;
+}
 
 #game-winner {
   margin-top: 35px;

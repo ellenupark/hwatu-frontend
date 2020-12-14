@@ -18,6 +18,7 @@ class Card {
         switch (this.playerRole) {
             case 'deck':
                 if (cardContainer.childElementCount === 0) {
+                    cardImg.id = `card-deck`;
                     cardImg.setAttribute('src', "https://i.ibb.co/QJ2J9d2/cardback.png");
                 } else {
                     return;
