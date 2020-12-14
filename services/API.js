@@ -63,4 +63,49 @@ class API {
         return fetch(`http://localhost:3000/players/${game.deck.id}/cards`)
         .then(resp => resp.json())
     }
+
+    static async fetchTopTenGames() {
+        return fetch("http://localhost:3000/games/history")
+        .then(resp => resp.json())
+        .then(cards => cards.data.forEach(card => API.loadCardsToSummary(card)))
+    }
+
+    static async createNewGame() {
+        let url = gameURL;
+
+        let name = {
+            name: `${game.name}`
+        }
+
+        let options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                "Accept": "application/json"
+            },
+            body: JSON.stringify(name)
+        };
+
+        return fetch(url, options)
+        .then(resp => resp.json())
+    }
+
+    static async updateGamePointTotal() {
+        return fetch(`http://localhost:3000/games/${game.id}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    points: game.points,
+                })
+            })
+            .then(resp => resp.json())
+    }
+
+    static async loadTopTenGames() {
+        return fetch("http://localhost:3000/games/history")
+        .then(resp => resp.json())
+    }
 }

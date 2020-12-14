@@ -12,6 +12,8 @@ class Game {
         this.players = [];
         this.turnCount = 0;
         this.name = "";
+        this.points = 0;
+        this.id = 0;
     };
 
     reset() {
@@ -453,6 +455,7 @@ class Game {
         userPoints.ribbon += Game.calculateRibbonCardPoints(userCards);
         userPoints.junk += Game.calculateJunkCardPoints(userCards);
         userPoints.total += userPoints.bright + userPoints.animal + userPoints.ribbon + userPoints.junk;
+        game.points = userPoints.total;
 
         computerPoints.bright += Game.calculateBrightCardPoints(computerCards);
         computerPoints.animal += Game.calculateAnimalCardPoints(computerCards);
@@ -460,22 +463,32 @@ class Game {
         computerPoints.junk += Game.calculateJunkCardPoints(computerCards);
         computerPoints.total += computerPoints.bright + computerPoints.animal + computerPoints.ribbon + computerPoints.junk;
         
-        userPoints > computerPoints ? winner = userPoints : winner = computerPoints;
+        userPoints.total > computerPoints.total ? winner = userPoints : winner = computerPoints;
         return winner;
     }
 
     static async displayWinner() {
         const winner = await Game.calculateWinner();
+        await API.updateGamePointTotal();
+
         const parentDiv = document.getElementById('winner');
         const displayDiv = document.getElementById('display-winner');
         const displayName = document.getElementById('game-winner');
 
+        // Render who won
         winner.player === game.user ? displayName.innerText = `${game.name} Won!` : displayName.innerText = 'You Lost! Better Luck Next Time!';
-        displayDiv.innerHTML += Game.renderUserPointTotal(winner);
+        
+        // Render users points
+        parentDiv.innerHTML += Game.renderUserPointTotal(winner);
 
+        // Render game history
+        await Game.renderGameHistory();
+
+        // Add event listeners to buttons
         const playAgainButton = document.getElementById('play-again')
         const exitButton = document.getElementById('exit')
 
+        // Hide game board and reveal winner display
         document.getElementById('main-game').classList.add('hidden')
         parentDiv.classList.remove('hidden')
 
@@ -487,36 +500,49 @@ class Game {
 
     static renderUserPointTotal(winner) {
         return `
-            <div class="container point-display">
-                <h4>${game.name}'s Total Points: ${winner.total}</h4>
-                <div class="row">
-                    <div class="col"> 
+                <div class="row justify-content-center">
+                    <div class="col-3" id="point-display">
+                        <h4>${game.name}'s Total Points: ${winner.total}</h4>
                         <p>Bright Points: ${winner.bright}</p>
-                    </div>
-                    <div class="col"> 
                         <p>Animal Points: ${winner.animal}</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col"> 
                         <p>Ribbon Points: ${winner.ribbon}</p>
-                    </div>
-                    <div class="col"> 
                         <p>Junk Points: ${winner.junk}</p>
                     </div>
+                    <div class="col-3" id="leaderboard">
+                        <h4>High Scores</h4>
+                    </div>
                 </div>
-            </div>
+        `
+    };
+
+    static async renderGameHistory() {
+        const parentDiv = document.getElementById('leaderboard');
+        const games = await API.loadTopTenGames();
+
+        asyncForEach(games.data, async function(game) {
+            parentDiv.innerHTML += Game.renderGameHistoryHtml(game);
+            return game;
+        })
+         
+        return games;
+    };
+
+    static renderGameHistoryHtml(game) {
+        return `
+            <p>${game.attributes.name}: ${game.attributes.points}</p>
         `
     };
 
     static async exitGame() {
         game.turnCount = 0;
         game.name = "";
+        game.id = 0;
+        game.points = 0;
         await Card.dealCards();
 
         document.getElementById('user-pairs').innerHTML = '<h3 id="player-pairs"></h3>'
         document.getElementById('computer-pairs').innerHTML = '<h3>Computer Pairs</h3>'
-        document.getElementById('display-winner').lastElementChild.remove();
+        document.getElementById('point-display').remove();
 
         document.getElementById('main-game').classList.add('hidden')
         document.getElementById('winner').classList.add('hidden')
@@ -525,7 +551,9 @@ class Game {
     }
 
     static async resetGame() {
+        let newGame = await API.createNewGame();
         game.turnCount = 0;
+        game.id = newGame.data.id;
         await Card.dealCards();
         game.playGame();
 

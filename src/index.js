@@ -38,7 +38,8 @@ function loadGame() {
       .then(resp => resp.json())
       .then(newGame => {
         if (!newGame.errors){
-          game.name = newGame.data.attributes.name
+          game.name = newGame.data.attributes.name;
+          game.id = newGame.data.id;
           game.playGame();
           gameForm.reset();
         } else {
