@@ -30,8 +30,8 @@ class API {
             }) 
     }
 
-    static async updateCardPlayerToBoard(card) {
-        return fetch(`http://localhost:3000/cards/${card.data.id}`, {
+    static async updateCardPlayerToBoard(cardId) {
+        return fetch(`http://localhost:3000/cards/${cardId}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
