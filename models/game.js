@@ -168,13 +168,13 @@ class Game {
         const notice = document.getElementById('current-player-display');
         if (game.currentPlayer === game.user) {
             notice.innerHTML = `
-                <div id="current-player-notice">
+                <div class="current-player-notice" id="current-user">
                     <h5>Your Turn</h5>
                 </div>
             `
         } else {
             notice.innerHTML = `
-                <div id="current-player-notice">
+                <div class="current-player-notice" id="current-computer">
                     <h5>Opponent's Turn</h5>
                 </div>
             `

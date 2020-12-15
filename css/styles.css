@@ -204,14 +204,14 @@ img {
 
 /* Instruction Notification */
 .rule-notice {
-  background-color: lightpink;
+  background-color: lightyellow;
   border: 2px solid grey;
   padding: 5px;
   border-radius: 15px;
 }
 
 .flip-notice {
-  background-color: lightgreen;
+  background-color: lightyellow;
   border: 2px solid grey;
   padding: 5px;
   border-radius: 15px;
@@ -222,11 +222,20 @@ img {
 }
 
 .highlight-deck {
-  border: 3px solid lightgreen;
+  border: 3px solid lightyellow;
 }
 
-#current-player-notice {
-  background-color: lightyellow;
+/* Current Player Display */
+
+#current-computer {
+  background-color: lightgrey;
+  border: 2px solid grey;
+  padding: 5px;
+  border-radius: 15px;
+}
+
+#current-user {
+  background-color: lightgreen;
   border: 2px solid grey;
   padding: 5px;
   border-radius: 15px;
