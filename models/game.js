@@ -241,6 +241,7 @@ class Game {
     };
 
     static userFlipCardFromDeck() {
+        document.getElementById('card-deck').removeEventListener('click', Game.userFlipCardFromDeck);
         document.getElementById('card-deck').classList.remove('highlight-deck');
         const notice = document.getElementById('instruction-display');
         notice.innerHTML = "";

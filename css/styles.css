@@ -123,21 +123,13 @@ body {
     animation-name: fadeInUp;
     }
 
-
+/* Name Form */
 form {
     display: table;
     margin: auto;
 }
 
-.paired-bottom {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
-    padding: 20px;
-}
-
+/* Game Board */
 #main-game {
   height: 50%;
 }
@@ -148,35 +140,21 @@ form {
 
 .row {
     text-align: center;
-    padding: 3px;
 }
 
 .instructions .row {
     text-align: left;
 }
 
+/* Cards */
+
 img {
-    width: 50px;
-    padding: 2px;
+  width: 50px;
+  padding: 2px;
 }
 
 .paired img {
-    width: 33px;
-}
-
-.test {
-    height: 100vh;
-    background-color: lightblue;
-}
-
-.paired {
-    padding: 0px 25px 0px 25px;
-    min-height: 200px;
-}
-
-.narrow-width {
-    max-width: 45%;
-    margin: 0 auto;
+  width: 33px;
 }
 
 /* Board Row */
@@ -197,11 +175,11 @@ img {
 }
 
 #computer-pairs {
-  padding-right: 10px;
+  padding-right: 5px;
 }
 
 #user-pairs {
-  padding-left: 10px;
+  padding-left: 5px;
 }
 
 .matched {
@@ -212,6 +190,16 @@ img {
 
 .month-title {
   margin-bottom: 0;
+}
+
+.paired {
+  min-height: 200px;
+  border-right: 3px solid black;
+}
+
+.narrow-width {
+  max-width: 45%;
+  margin: 0 auto;
 }
 
 /* Instruction Notification */
