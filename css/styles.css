@@ -207,14 +207,22 @@ img {
   background-color: lightyellow;
   border: 2px solid grey;
   padding: 5px;
-  border-radius: 15px;
+  border-radius: 10px;
+}
+
+.rule-notice h5 {
+  margin-top: 6px;
 }
 
 .flip-notice {
   background-color: lightyellow;
   border: 2px solid grey;
   padding: 5px;
-  border-radius: 15px;
+  border-radius: 10px;
+}
+
+.flip-notice h5 {
+  margin-top: 6px;
 }
 
 .highlight {
@@ -227,18 +235,22 @@ img {
 
 /* Current Player Display */
 
+.current-player-notice h5 {
+  margin-top: 6px;
+}
+
 #current-computer {
   background-color: lightgrey;
   border: 2px solid grey;
   padding: 5px;
-  border-radius: 15px;
+  border-radius: 55px;
 }
 
 #current-user {
   background-color: lightgreen;
   border: 2px solid grey;
   padding: 5px;
-  border-radius: 15px;
+  border-radius: 55px;
 }
 
 /* Board Format */
@@ -255,7 +267,8 @@ img {
 }
 
 #game-winner {
-  margin-top: 35px;
+  margin-top: 80px;
+  margin-bottom: 30px;
 }
 
 #point-display, #leaderboard {
@@ -273,3 +286,29 @@ img {
 .align-center {
   text-align: center;
 }
+
+.display-winner {
+  border-radius: 5px;
+}
+
+#winner-row {
+  margin-bottom: 45px;
+}
+
+/* User Won */
+
+.winner-user {
+  background-image: url('../card-imgs/japanese-modern-interior-art-112-artmarketjapan.jpg');
+  background-position: bottom;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+/* Computer Won */
+.winner-computer {
+  background-image: url('../card-imgs/fig2_wasdale_head.jpg');
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+}
+

@@ -228,6 +228,7 @@ class Game {
             Game.displayFlipCardFromDeckInstructions();
             document.getElementById('card-deck').classList.add('highlight-deck');
             document.getElementById('card-deck').addEventListener('click', Game.userFlipCardFromDeck);
+            document.getElementsByClassName('flip-notice')[0].addEventListener('click', Game.userFlipCardFromDeck);
             await Game.awaitUserInput();
         } else {
             await timeout(1000);
@@ -241,6 +242,7 @@ class Game {
     };
 
     static userFlipCardFromDeck() {
+        document.getElementsByClassName('flip-notice')[0].removeEventListener('click', Game.userFlipCardFromDeck);
         document.getElementById('card-deck').removeEventListener('click', Game.userFlipCardFromDeck);
         document.getElementById('card-deck').classList.remove('highlight-deck');
         const notice = document.getElementById('instruction-display');
@@ -503,10 +505,11 @@ class Game {
         const displayName = document.getElementById('game-winner');
 
         // Render who won
-        winner.player === game.user ? displayName.innerText = `${game.name} Won!` : displayName.innerText = 'You Lost! Better Luck Next Time!';
+        winner.player === game.user ? displayName.innerText = `You Won!` : displayName.innerText = 'You Lost! Better Luck Next Time!';
         
         // Render users points
         parentDiv.innerHTML += Game.renderUserPointTotal(winner);
+        winner.player === game.user ? parentDiv.classList.add('winner-user') : parentDiv.classList.add('winner-computer');
 
         // Render game history
         await Game.renderGameHistory();
@@ -564,7 +567,7 @@ class Game {
         document.getElementById('winner').innerHTML = `
             <div class="row">
                 <div class="col-sm-12 my-auto" id="display-winner">
-                    <h3 id="game-winner"></h3>
+                    <h1 id="game-winner"></h1>
                     <button type="submit" id="play-again" class="btn btn-primary mb-2">Play Again?</button>
                     <button type="submit" id="exit" class="btn btn-secondary mb-2">Exit</button>
                 </div>
@@ -578,6 +581,8 @@ class Game {
 
         userPairs.innerHTML = '<h3 id="player-pairs"></h3>'
         computerPairs.innerHTML = `<h3>Opponent's Sets</h3>`
+        document.getElementById('winner').classList.remove('winner-user');
+        document.getElementById('winner').classList.remove('winner-computer');
         document.getElementById('point-display').remove();
 
         document.getElementById('main-game').classList.add('hidden')
@@ -597,6 +602,8 @@ class Game {
         userPairs.innerHTML = `<h3 id="player-pairs">${game.name}'s Sets</h3>`
         computerPairs.innerHTML = `<h3>Opponent's Sets</h3>`;
         document.getElementById('display-winner').lastElementChild.remove();
+        document.getElementById('winner').classList.remove('winner-user');
+        document.getElementById('winner').classList.remove('winner-computer');
 
         document.getElementById('main-game').classList.remove('hidden')
         document.getElementById('winner').classList.add('hidden')
