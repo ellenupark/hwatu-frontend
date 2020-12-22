@@ -9,6 +9,7 @@ class API {
         return await resp.json();
     }
 
+    // Not using?
     static async retrieveCardsByPlayer(id) {
         const player = await fetch(`http://localhost:3000/players/${id}`).then(resp => resp.json());
         return player.data.attributes.cards;
@@ -44,6 +45,7 @@ class API {
         .then(resp => resp.json())
     }
 
+    // Move to backend
     static async updateCardPlayer(card, player) {
         return fetch(`http://localhost:3000/cards/${card.id}`, {
                 method: "PATCH",

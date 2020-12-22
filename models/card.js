@@ -135,7 +135,6 @@ class Card {
 
             // Prevents 4 of same card month from being dealt to user/board/computer
             if (assignedPlayer.cards.filter(c => c.month === card.attributes.month).length === 3 && assignedPlayer !== game.deck) {
-                debugger
                 assignedPlayer = sample(playerPool.filter(p => p !== assignedPlayer));
             };
             

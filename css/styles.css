@@ -1,5 +1,9 @@
+html {
+  overflow-y: scroll;
+}
+
 body {
-    background-color: lightblue;
+    background-color: #FFFFFF;
 }
 
 .hidden {

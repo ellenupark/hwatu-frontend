@@ -688,4 +688,5 @@ class Game {
     }
 };
 
+// Move to game initialization
 let game = new Game();
